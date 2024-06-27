@@ -1,0 +1,1 @@
+enum UserTypes {admin,input,output}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "618037327796",
+    "project_id": "lotayatwodigit",
+    "storage_bucket": "lotayatwodigit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:618037327796:android:eede800d3b04e3ec56a4e1",
+        "android_client_info": {
+          "package_name": "com.digit.lotaya2d3d"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB6pDt_J6FjM62JHi9bgIc5sitksYQBCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
