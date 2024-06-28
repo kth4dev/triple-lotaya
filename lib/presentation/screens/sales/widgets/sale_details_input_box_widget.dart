@@ -827,11 +827,11 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           Receipt receipt = Receipt(
               type: "$digit+",
               digitList: rValues.map((value)=>  Digit(
-                  amount: int.parse(amountController.text) ~/ rValues.length,
+                  amount: int.parse(amountController.text),
                   value: value,
                   createdTime: DateTime.now().millisecondsSinceEpoch,
                   createUser: CacheHelper.getAccountInfo().name)).toList(),
-              totalAmount: int.parse(amountController.text));
+              totalAmount: int.parse(amountController.text) * rValues.length);
           currentReceipts.add(receipt);
         }
       }
@@ -839,7 +839,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       var digitList = digitController.text.split(".");
       for (var digit in digitList) {
         int? value = int.tryParse(digit);
-        if (value != null && value < 1000 && value >= 0) {
+        if (digit.length == 3 && value != null && value < 1000 && value >= 0) {
           Receipt receipt = Receipt(
               type: digit,
               digitList: [
