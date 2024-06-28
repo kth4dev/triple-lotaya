@@ -49,7 +49,7 @@ class _HotNumberScreenState extends State<HotNumberScreen> {
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add(e.date)).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];

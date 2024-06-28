@@ -38,15 +38,21 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
     return Scaffold(
       appBar: defaultAppBar(context, title: "လယ်ဂျာ"),
       body: Padding(
-        padding: (MediaQuery.of(context).size.width > 600) ? const EdgeInsets.all(10.0) : const EdgeInsets.all(5),
+        padding: (MediaQuery.of(context).size.width > 600)
+            ? const EdgeInsets.all(10.0)
+            : const EdgeInsets.all(5),
         child: BlocBuilder<MatchBloc, MatchState>(
           builder: (context, state) {
             if (state is MatchLoadingState) {
-              return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+              return const Center(
+                  child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator()));
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add("${e.date}")).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];
@@ -57,18 +63,22 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                     _selectedMatch = state.matchList[i];
                   }
                 }
-                BlocProvider.of<UserDigitsBloc>(context).add(GetUserDigits(digitMatch: _selectedMatch, type: _selectedType));
+                BlocProvider.of<UserDigitsBloc>(context).add(GetUserDigits(
+                    digitMatch: _selectedMatch, type: _selectedType));
               }
 
               if (matches.isNotEmpty) {
                 if (_selectedMatch.winnerNumber != null) {
-                  winNumberController.text = _selectedMatch.winnerNumber.toString();
+                  winNumberController.text =
+                      _selectedMatch.winnerNumber.toString();
                 } else {
                   winNumberController.text = "";
                 }
                 return Center(
                   child: SizedBox(
-                    width: (MediaQuery.of(context).size.width >= 900) ? 900 : MediaQuery.of(context).size.width,
+                    width: (MediaQuery.of(context).size.width >= 900)
+                        ? 900
+                        : MediaQuery.of(context).size.width,
                     child: Column(
                       children: [
                         Row(
@@ -82,8 +92,12 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                                   if (newValue != null) {
                                     setState(() {
                                       _selectedMatchId = newValue;
-                                      _selectedMatch = state.matchList[matches.indexOf(newValue)];
-                                      BlocProvider.of<UserDigitsBloc>(context).add(GetUserDigits(digitMatch: _selectedMatch, type: _selectedType));
+                                      _selectedMatch = state
+                                          .matchList[matches.indexOf(newValue)];
+                                      BlocProvider.of<UserDigitsBloc>(context)
+                                          .add(GetUserDigits(
+                                              digitMatch: _selectedMatch,
+                                              type: _selectedType));
                                     });
                                   }
                                 },
@@ -99,9 +113,12 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                                 onChange: (String? newValue) {
                                   if (newValue != null) {
                                     setState(() {
-                                      _selectedUser="All";
+                                      _selectedUser = "All";
                                       _selectedType = newValue;
-                                      BlocProvider.of<UserDigitsBloc>(context).add(GetUserDigits(digitMatch: _selectedMatch, type: _selectedType));
+                                      BlocProvider.of<UserDigitsBloc>(context)
+                                          .add(GetUserDigits(
+                                              digitMatch: _selectedMatch,
+                                              type: _selectedType));
                                     });
                                   }
                                 },
@@ -112,7 +129,9 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                         14.paddingHeight,
                         UnderLineDropDownButton(
                           initialValue: _selectedUser,
-                          values: (_selectedType=="in")?["All",..._selectedMatch.inAccountUserName]:["All",..._selectedMatch.outAccountUserName],
+                          values: (_selectedType == "in")
+                              ? ["All", ..._selectedMatch.inAccountUserName]
+                              : ["All", ..._selectedMatch.outAccountUserName],
                           label: "User",
                           onChange: (String? newValue) {
                             if (newValue != null) {
@@ -124,76 +143,152 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                         ),
                         5.paddingHeight,
                         Expanded(
-                          child: BlocBuilder<UserDigitsBloc, UserDigitsState>(builder: (context, state) {
+                          child: BlocBuilder<UserDigitsBloc, UserDigitsState>(
+                              builder: (context, state) {
                             if (state is UserDigitsLoadedState) {
                               return Column(
                                 children: [
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                    child: DefaultText("All Total = ${formatMoneyForNum(state.total)}", style: TextStyles.titleTextStyle),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: DefaultText(
+                                        "All Total = ${formatMoneyForNum(state.total)}",
+                                        style: TextStyles.titleTextStyle),
                                   ),
                                   Expanded(
                                     child: ListView.builder(
-                                        itemCount: state.userDigitsModelList.length,
+                                        itemCount:
+                                            state.userDigitsModelList.length,
                                         itemBuilder: (context, index) {
-                                          int colorIndex=0;
+                                          int colorIndex = 0;
                                           int total = 0;
-                                          for (var amount in state.userDigitsModelList[index].digitAmount) {
+                                          for (var amount in state
+                                              .userDigitsModelList[index]
+                                              .digitAmount) {
                                             total += amount;
                                           }
-                                          if(_selectedUser=="All" || _selectedUser==state.userDigitsModelList[index].userName) {
+                                          if (_selectedUser == "All" ||
+                                              _selectedUser ==
+                                                  state
+                                                      .userDigitsModelList[
+                                                          index]
+                                                      .userName) {
                                             return Card(
-                                            child: ExpansionTile(
-                                              title: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              child: ExpansionTile(
+                                                title: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    DefaultText(
+                                                        state
+                                                            .userDigitsModelList[
+                                                                index]
+                                                            .userName,
+                                                        style: TextStyles
+                                                            .bodyTextStyle),
+                                                    DefaultText(
+                                                        formatMoney(total),
+                                                        style: TextStyles
+                                                            .bodyTextStyle),
+                                                  ],
+                                                ),
                                                 children: [
-                                                  DefaultText(state.userDigitsModelList[index].userName, style: TextStyles.bodyTextStyle),
-                                                  DefaultText(formatMoney(total), style: TextStyles.bodyTextStyle),
+                                                  Container(
+                                                    color:
+                                                        const Color(0xffdcdcdc),
+                                                    child: ListView.builder(
+                                                      shrinkWrap: true,
+                                                      physics:
+                                                          const NeverScrollableScrollPhysics(),
+                                                      itemCount: state
+                                                          .userDigitsModelList[
+                                                              index]
+                                                          .digitAmount
+                                                          .length,
+                                                      itemBuilder: (context,
+                                                          digitAmountIndex) {
+                                                        if (state
+                                                                    .userDigitsModelList[
+                                                                        index]
+                                                                    .digitAmount[
+                                                                digitAmountIndex] >
+                                                            0) {
+                                                          colorIndex += 1;
+                                                          return Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        8.0,
+                                                                    horizontal:
+                                                                        14),
+                                                            color: ((_selectedMatch.winnerNumber ??
+                                                                            "")
+                                                                        .isNotEmpty &&
+                                                                    _selectedMatch
+                                                                            .winnerNumber ==
+                                                                        "${(digitAmountIndex < 10) ? 0 : ""}$digitAmountIndex")
+                                                                ? Colors.green
+                                                                : (colorIndex
+                                                                        .isEven)
+                                                                    ? Color(
+                                                                        0xffF3F3F3)
+                                                                    : Colors
+                                                                        .white,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: [
+                                                                DefaultText(
+                                                                    "${(digitAmountIndex < 10) ? 0 : ""}$digitAmountIndex",
+                                                                    style: TextStyles
+                                                                        .titleTextStyle),
+                                                                DefaultText(
+                                                                    formatMoney(state
+                                                                            .userDigitsModelList[
+                                                                                index]
+                                                                            .digitAmount[
+                                                                        digitAmountIndex]),
+                                                                    style: TextStyles
+                                                                        .bodyTextStyle),
+                                                              ],
+                                                            ),
+                                                          );
+                                                        }
+
+                                                        return SizedBox();
+                                                      },
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            bottom: 1),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 14.0,
+                                                        vertical: 8),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        const DefaultText(
+                                                            "Total",
+                                                            style: TextStyles
+                                                                .titleTextStyle),
+                                                        DefaultText(
+                                                            formatMoney(total),
+                                                            style: TextStyles
+                                                                .bodyTextStyle),
+                                                      ],
+                                                    ),
+                                                  )
                                                 ],
                                               ),
-                                              children: [
-                                                Container(
-                                                  color: const Color(0xffdcdcdc),
-                                                  child: ListView.builder(
-                                                    shrinkWrap: true,
-                                                    physics: const NeverScrollableScrollPhysics(),
-                                                    itemCount: state.userDigitsModelList[index].digitAmount.length,
-                                                    itemBuilder: (context, digitAmountIndex) {
-                                                      if (state.userDigitsModelList[index].digitAmount[digitAmountIndex] > 0) {
-                                                        colorIndex+=1;
-                                                        return Container(
-                                                          padding: const EdgeInsets.symmetric(vertical: 8.0,horizontal: 14),
-                                                          color: ((_selectedMatch.winnerNumber ?? "").isNotEmpty && _selectedMatch.winnerNumber == "${(digitAmountIndex < 10) ? 0 : ""}$digitAmountIndex")
-                                                              ? Colors.green
-                                                              : (colorIndex.isEven)? Color(0xffF3F3F3):Colors.white,
-                                                          child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                            children: [
-                                                              DefaultText("${(digitAmountIndex < 10) ? 0 : ""}$digitAmountIndex", style: TextStyles.titleTextStyle),
-                                                              DefaultText(formatMoney(state.userDigitsModelList[index].digitAmount[digitAmountIndex]), style: TextStyles.bodyTextStyle),
-                                                            ],
-                                                          ),
-                                                        );
-                                                      }
-
-                                                      return SizedBox();
-                                                    },
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin: const EdgeInsets.only(bottom: 1),
-                                                  padding: const EdgeInsets.symmetric(horizontal: 14.0,vertical: 8),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                    children: [
-                                                      const DefaultText("Total", style: TextStyles.titleTextStyle),
-                                                      DefaultText(formatMoney(total), style: TextStyles.bodyTextStyle),
-                                                    ],
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          );
+                                            );
                                           }
 
                                           return SizedBox();
@@ -214,9 +309,11 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
               }
             }
             if (state is MatchErrorState) {
-              return DefaultText(state.errorMessage, style: TextStyles.bodyTextStyle.copyWith(color: Colors.red));
+              return DefaultText(state.errorMessage,
+                  style: TextStyles.bodyTextStyle.copyWith(color: Colors.red));
             }
-            return const DefaultText("Something went wrong", style: TextStyles.bodyTextStyle);
+            return const DefaultText("Something went wrong",
+                style: TextStyles.bodyTextStyle);
           },
         ),
       ),

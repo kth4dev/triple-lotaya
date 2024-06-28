@@ -14,8 +14,6 @@ DigitMatch _$DigitMatchFromJson(Map<String, dynamic> json) => DigitMatch(
       outAccounts: (json['outAccounts'] as List<dynamic>)
           .map((e) => Account.fromJson(e as Map<String, dynamic>))
           .toList(),
-      time: json['time'] as String,
-      openTime: json['openTime'] as int,
       closeTime: json['closeTime'] as int,
       isActive: json['isActive'] as bool,
       createdDate: json['createdDate'] as int,
@@ -31,8 +29,6 @@ DigitMatch _$DigitMatchFromJson(Map<String, dynamic> json) => DigitMatch(
 Map<String, dynamic> _$DigitMatchToJson(DigitMatch instance) =>
     <String, dynamic>{
       'date': instance.date,
-      'time': instance.time,
-      'openTime': instance.openTime,
       'closeTime': instance.closeTime,
       'isActive': instance.isActive,
       'breakAmount': instance.breakAmount,

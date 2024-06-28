@@ -39,15 +39,21 @@ class _SlipsScreenState extends State<SlipsScreen> {
     return Scaffold(
       appBar: defaultAppBar(context, title: "စလစ်"),
       body: Padding(
-        padding: (MediaQuery.of(context).size.width > 600) ? const EdgeInsets.all(10.0) : const EdgeInsets.all(5),
+        padding: (MediaQuery.of(context).size.width > 600)
+            ? const EdgeInsets.all(10.0)
+            : const EdgeInsets.all(5),
         child: BlocBuilder<MatchBloc, MatchState>(
           builder: (context, state) {
             if (state is MatchLoadingState) {
-              return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+              return const Center(
+                  child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator()));
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add(e.date)).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];
@@ -62,13 +68,16 @@ class _SlipsScreenState extends State<SlipsScreen> {
 
               if (matches.isNotEmpty) {
                 if (_selectedMatch.winnerNumber != null) {
-                  winNumberController.text = _selectedMatch.winnerNumber.toString();
+                  winNumberController.text =
+                      _selectedMatch.winnerNumber.toString();
                 } else {
                   winNumberController.text = "";
                 }
                 return Center(
                   child: SizedBox(
-                    width: (MediaQuery.of(context).size.width >= 600) ? 600 : MediaQuery.of(context).size.width,
+                    width: (MediaQuery.of(context).size.width >= 600)
+                        ? 600
+                        : MediaQuery.of(context).size.width,
                     child: Column(
                       children: [
                         Row(
@@ -82,7 +91,8 @@ class _SlipsScreenState extends State<SlipsScreen> {
                                   if (newValue != null) {
                                     setState(() {
                                       _selectedMatchId = newValue;
-                                      _selectedMatch = state.matchList[matches.indexOf(newValue)];
+                                      _selectedMatch = state
+                                          .matchList[matches.indexOf(newValue)];
                                     });
                                   }
                                 },
@@ -107,7 +117,11 @@ class _SlipsScreenState extends State<SlipsScreen> {
                           ],
                         ),
                         5.paddingHeight,
-                        listWidget((_selectedType == "in") ? _selectedMatch.inAccounts.where((element) => (element.type == "input")).toList() : _selectedMatch.outAccounts)
+                        listWidget((_selectedType == "in")
+                            ? _selectedMatch.inAccounts
+                                .where((element) => (element.type == "input"))
+                                .toList()
+                            : _selectedMatch.outAccounts)
                       ],
                     ),
                   ),
@@ -117,9 +131,11 @@ class _SlipsScreenState extends State<SlipsScreen> {
               }
             }
             if (state is MatchErrorState) {
-              return DefaultText(state.errorMessage, style: TextStyles.bodyTextStyle.copyWith(color: Colors.red));
+              return DefaultText(state.errorMessage,
+                  style: TextStyles.bodyTextStyle.copyWith(color: Colors.red));
             }
-            return const DefaultText("Something went wrong", style: TextStyles.bodyTextStyle);
+            return const DefaultText("Something went wrong",
+                style: TextStyles.bodyTextStyle);
           },
         ),
       ),
@@ -135,7 +151,11 @@ class _SlipsScreenState extends State<SlipsScreen> {
         child: Column(
           children: accounts.map((account) {
             if (isAccountContain(account)) {
-              return UserSlipWidget(matchId: _selectedMatch.matchId, type: _selectedType, accountName: account.name, winNumber: _selectedMatch.winnerNumber ?? "");
+              return UserSlipWidget(
+                  matchId: _selectedMatch.matchId,
+                  type: _selectedType,
+                  accountName: account.name,
+                  winNumber: _selectedMatch.winnerNumber ?? "");
             } else {
               return const SizedBox();
             }
@@ -153,7 +173,8 @@ class _SlipsScreenState extends State<SlipsScreen> {
           padding: const EdgeInsets.all(8),
           child: DefaultText(
             label,
-            style: TextStyles.subTitleTextStyle.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyles.subTitleTextStyle
+                .copyWith(fontWeight: FontWeight.bold, color: Colors.white),
           )),
     );
   }
@@ -168,9 +189,5 @@ class _SlipsScreenState extends State<SlipsScreen> {
             style: TextStyles.subTitleTextStyle.copyWith(color: Colors.black),
           )),
     );
-  }
-
-  static String getTime(int timeStamp) {
-    return DateFormat.Hms().format(DateTime.fromMillisecondsSinceEpoch(timeStamp));
   }
 }

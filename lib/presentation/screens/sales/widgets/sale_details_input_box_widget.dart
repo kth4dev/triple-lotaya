@@ -237,7 +237,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                                 },
                                 label: "Copy"),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           SizedBox(
                             width: 100,
                             child: DefaultButton(
@@ -468,7 +468,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                         if (currentSlipId != null) {
                           await FirebaseFirestore.instance
                               .collection(Collections.match)
-                              .doc("${widget.match.date} ${widget.match.time}")
+                              .doc(widget.match.date)
                               .collection(widget.selectUser.userType)
                               .doc("${widget.selectUser.userName}${currentSlipController.text}")
                               .set(_selectedSlip!.toJson())
@@ -485,7 +485,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                               showNoticeToast(message: "Over Time");
                             }
 
-                            FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+                            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                                 title: overTimeDeleteMessage,
                                 content: "${CacheHelper.getAccountInfo().name} --> [${receipt.type}]  ${widget.selectUser.userName}(slip ${currentSlipController.text})",
                                 matchId: widget.match.matchId,
@@ -524,7 +524,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                   if (currentSlipId != null) {
                     await FirebaseFirestore.instance
                         .collection(Collections.match)
-                        .doc("${widget.match.date} ${widget.match.time}")
+                        .doc(widget.match.date)
                         .collection(widget.selectUser.userType)
                         .doc("${widget.selectUser.userName}${currentSlipController.text}")
                         .set(_selectedSlip!.toJson())
@@ -539,7 +539,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                       if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
                         showNoticeToast(message: "Over Time");
                       }
-                      FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+                      FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                           title: overTimeDeleteMessage,
                           content: "${CacheHelper.getAccountInfo().name} deleted [${receipt.digitList[index].value}]  ${widget.selectUser.userName}( slip ${currentSlipController.text} )",
                           matchId: widget.match.matchId,
@@ -860,7 +860,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
         }
         FirebaseFirestore.instance
             .collection(Collections.match)
-            .doc("${widget.match.date} ${widget.match.time}")
+            .doc(widget.match.date)
             .collection(widget.selectUser.userType)
             .doc("${widget.selectUser.userName}$currentSlip")
             .set(Slip(totalAmount: tAmount, receipts: currentReceipts, userName: widget.selectUser.userName, id: currentSlip, isSave: false).toJson())
@@ -869,7 +869,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
           if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
             showNoticeToast(message: "Over Time");
-            FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                     title: overTimeInsertMessage,
                     content: "${CacheHelper.getAccountInfo().name} -->  ${widget.selectUser.userName}(slip $currentSlip)",
                     matchId: widget.match.matchId,
@@ -892,7 +892,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
 
         FirebaseFirestore.instance
             .collection(Collections.match)
-            .doc("${widget.match.date} ${widget.match.time}")
+            .doc(widget.match.date)
             .collection(widget.selectUser.userType)
             .doc("${widget.selectUser.userName}$currentSlip")
             .set(_selectedSlip!.toJson())
@@ -902,7 +902,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
           if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
             showNoticeToast(message: "Over Time");
-            FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                     title: overTimeInsertMessage,
                     content: "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)",
                     matchId: widget.match.matchId,
@@ -945,7 +945,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
 
     if (hotsNumber.isNotEmpty) {
       showHotNoticeToast(message: "$addHotNumberMessage  [$hotsNumber]");
-      FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+      FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
               title: "$addHotNumberMessage  [$hotsNumber]",
               content: "${CacheHelper.getAccountInfo().name}  -->  ${widget.selectUser.userName} (slip ${currentSlipController.text})",
               matchId: widget.match.matchId,
@@ -974,10 +974,10 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       int allTotal = tempTotal + userDigitsTotalAmount;
       if (allTotal > digitPermission.totalPermission!) {
         showPermissionNoticeToast(message: "Over Total [ ${widget.selectUser.userName} ]");
-        FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+        FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                 title: "Over Total [ ${widget.selectUser.userName} ]",
                 content:
-                    "${CacheHelper.getAccountInfo().name} make over total amount. Current Total = ${allTotal} | Permission = [${digitPermission.totalPermission} ] | Over = ${allTotal - digitPermission.totalPermission!}",
+                    "${CacheHelper.getAccountInfo().name} make over total amount. Current Total = $allTotal | Permission = [${digitPermission.totalPermission} ] | Over = ${allTotal - digitPermission.totalPermission!}",
                 matchId: widget.match.matchId,
                 slipId: "${widget.selectUser.userName}${currentSlipController.text}",
                 slipUserId: widget.selectUser.userName,
@@ -991,10 +991,10 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           num tempDigitTotal = userDigitsAmounts[int.parse(digit.value)] + digit.amount;
           if (tempDigitTotal > digitPermission.digitPermission!) {
             showPermissionNoticeToast(message: "Over - ${digit.value} [ ${widget.selectUser.userName} ]");
-            FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                     title: "Over - ${digit.value} [ ${widget.selectUser.userName} ]",
                     content:
-                        "${CacheHelper.getAccountInfo().name} make over digit amount. Current Total = ${tempDigitTotal} | Permission = [${digitPermission.digitPermission} ] | Over = ${tempDigitTotal - digitPermission.digitPermission!}",
+                        "${CacheHelper.getAccountInfo().name} make over digit amount. Current Total = $tempDigitTotal | Permission = [${digitPermission.digitPermission} ] | Over = ${tempDigitTotal - digitPermission.digitPermission!}",
                     matchId: widget.match.matchId,
                     slipId: "${widget.selectUser.userName}${currentSlipController.text}",
                     slipUserId: widget.selectUser.userName,
@@ -1051,7 +1051,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           }
           FirebaseFirestore.instance
               .collection(Collections.match)
-              .doc("${widget.match.date} ${widget.match.time}")
+              .doc(widget.match.date)
               .collection(widget.selectUser.userType)
               .doc("${widget.selectUser.userName}$currentSlip")
               .set(Slip(totalAmount: tAmount, receipts: currentReceipts, userName: widget.selectUser.userName, id: currentSlip, isSave: false).toJson())
@@ -1060,7 +1060,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
             if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
               showNoticeToast(message: "Over Time");
-              FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+              FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                       title: overTimeInsertMessage,
                       content: "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)]",
                       matchId: widget.match.matchId,
@@ -1082,7 +1082,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           _selectedSlip!.receipts.insertAll(0, currentReceipts);
           FirebaseFirestore.instance
               .collection(Collections.match)
-              .doc("${widget.match.date} ${widget.match.time}")
+              .doc(widget.match.date)
               .collection(widget.selectUser.userType)
               .doc("${widget.selectUser.userName}$currentSlip")
               .set(_selectedSlip!.toJson())
@@ -1092,7 +1092,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
             if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
               showNoticeToast(message: "Over Time");
-              FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+              FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                       title: overTimeInsertMessage,
                       content: "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)",
                       matchId: widget.match.matchId,
@@ -1114,10 +1114,10 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
   void uploadSlip() {
     int? currentSlip = int.tryParse(currentSlipController.text);
     if (currentSlip != null && _selectedSlip != null) {
-      showLoadingDialog(context: context, title: "${widget.match.date} ${widget.match.time}", content: "saving...");
+      showLoadingDialog(context: context, title: widget.match.date, content: "saving...");
       FirebaseFirestore.instance
           .collection(Collections.match)
-          .doc("${widget.match.date} ${widget.match.time}")
+          .doc(widget.match.date)
           .collection(widget.selectUser.userType)
           .doc("${widget.selectUser.userName}$currentSlip")
           .set(Slip(totalAmount: getCurrentSlipTotalAmount(), receipts: _selectedSlip!.receipts, userName: widget.selectUser.userName, id: currentSlip, isSave: true).toJson())
@@ -1130,7 +1130,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       }).whenComplete(() {
         if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
           showNoticeToast(message: "Over Time");
-          FirebaseFirestore.instance.collection(Collections.match).doc("${widget.match.date} ${widget.match.time}").collection(Collections.message).add(Message(
+          FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
                   title: overTimeSaveMessage,
                   content: "${CacheHelper.getAccountInfo().name} saved ${widget.selectUser.userName}(Slip $currentSlip)",
                   matchId: widget.match.matchId,
@@ -1189,6 +1189,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             },
           );
         } else if (data.hasError) {
+          print(data.error.toString());
           return DefaultText("fail to get users", style: TextStyles.footerTextStyle.copyWith(color: Colors.redAccent));
         }
 
@@ -1237,7 +1238,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
               future: FirebaseFirestore.instance
                   .collection(Collections.match)
-                  .doc("${widget.match.date} ${widget.match.time}")
+                  .doc(widget.match.date)
                   .collection(widget.selectUser.userType)
                   .where("userName", isEqualTo: widget.selectUser.userName)
                   .get(),

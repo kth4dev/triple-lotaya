@@ -2,22 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>41342314076-7db6p3aqujmo7ks93q2dlf6s6eipgokl.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.41342314076-7db6p3aqujmo7ks93q2dlf6s6eipgokl</string>
 	<key>API_KEY</key>
-	<string>AIzaSyC5BZF3rTO0TDErx-4GA2s44u28DTgae5I</string>
+	<string>AIzaSyDgjmnvseTSEqcTcXoDKpNWWkThUzfHv-s</string>
 	<key>GCM_SENDER_ID</key>
-	<string>41342314076</string>
+	<string>775284469031</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.digit.lotaya</string>
 	<key>PROJECT_ID</key>
-	<string>lotayadigit</string>
+	<string>lotaya-3d</string>
 	<key>STORAGE_BUCKET</key>
-	<string>lotayadigit.appspot.com</string>
+	<string>lotaya-3d.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:41342314076:ios:28c8ac1a2fe9162275e899</string>
+	<string>1:775284469031:ios:1ecded070c4eefc09a8d02</string>
 </dict>
 </plist>

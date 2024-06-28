@@ -36,13 +36,13 @@ class _MatchListScreenState extends State<MatchListScreen> {
               }
               int index = 0;
               return DataTable(
-                  headingRowColor: MaterialStateColor.resolveWith((states) => Color(0xfff5f3f3)),
+                  headingRowColor: MaterialStateColor.resolveWith((states) => const Color(0xfff5f3f3)),
                   columns: [
                     buildRowHeader("No"),
                     buildRowHeader("Name"),
                     buildRowHeader("Break Amount"),
                     buildRowHeader("Status"),
-                    buildRowHeader("Duration"),
+                    buildRowHeader("Close"),
                     buildRowHeader("Players"),
                     buildRowHeader("Delete"),
                   ],
@@ -83,7 +83,7 @@ class _MatchListScreenState extends State<MatchListScreen> {
                         });
                       })),
                       DataCell(DefaultText(
-                        "${DateFormat.Hm().format(DateTime.fromMillisecondsSinceEpoch(currentMatch.openTime))} - ${DateFormat.Hm().format(DateTime.fromMillisecondsSinceEpoch(currentMatch.closeTime))}",
+                        DateFormat.Hm().format(DateTime.fromMillisecondsSinceEpoch(currentMatch.closeTime)),
                         style: TextStyles.bodyTextStyle,
                       )),
                       DataCell(IconButton(onPressed: (){

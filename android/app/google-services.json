@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "618037327796",
-    "project_id": "lotayatwodigit",
-    "storage_bucket": "lotayatwodigit.appspot.com"
+    "project_number": "775284469031",
+    "project_id": "lotaya-3d",
+    "storage_bucket": "lotaya-3d.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:618037327796:android:eede800d3b04e3ec56a4e1",
+        "mobilesdk_app_id": "1:775284469031:android:eb0b9515a9b6f5f19a8d02",
         "android_client_info": {
           "package_name": "com.digit.lotaya2d3d"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCB6pDt_J6FjM62JHi9bgIc5sitksYQBCs"
+          "current_key": "AIzaSyCGxlLbwfuQQ2Pa9yB2v90YilGQeEieflI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:775284469031:android:9e8879458d3585429a8d02",
+        "android_client_info": {
+          "package_name": "com.lotaya.tripled"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGxlLbwfuQQ2Pa9yB2v90YilGQeEieflI"
         }
       ],
       "services": {

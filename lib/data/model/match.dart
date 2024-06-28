@@ -7,8 +7,6 @@ part 'match.g.dart';
 @JsonSerializable(explicitToJson: true)
 class DigitMatch{
   String date;
-  String time;
-  int openTime;
   int closeTime;
   bool isActive;
   int breakAmount;
@@ -20,13 +18,13 @@ class DigitMatch{
   int createdDate;
 
 
-  DigitMatch({required this.date,required this.inAccounts,required this.outAccounts,required  this.time, required this.openTime,required  this.closeTime,required  this.isActive,required this.createdDate,this.hotNumbers,this.winnerNumber,required this.breakAmount,required this.digitPermission});
+  DigitMatch({required this.date,required this.inAccounts,required this.outAccounts,required  this.closeTime,required  this.isActive,required this.createdDate,this.hotNumbers,this.winnerNumber,required this.breakAmount,required this.digitPermission});
 
   factory DigitMatch.fromJson(Map<String, dynamic> json) => _$DigitMatchFromJson(json);
 
   Map<String, dynamic> toJson() => _$DigitMatchToJson(this);
 
-  String get matchId => "${date} ${time}";
+  String get matchId => date;
 
   List<String> get inAccountUserName {
     List<String> accountNames=[];

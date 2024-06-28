@@ -18,7 +18,6 @@ import '../../../data/collections.dart';
 import '../../../data/model/match.dart';
 import '../../../data/model/user.dart';
 import '../../bloc/matche/match_bloc.dart';
-import '../sales/slip.dart';
 
 class WinNumberScreen extends StatefulWidget {
   const WinNumberScreen({Key? key}) : super(key: key);
@@ -45,34 +44,37 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
     return Scaffold(
       appBar: defaultAppBar(context, title: "ပေါက်သီး"),
       body: Padding(
-        padding: (MediaQuery
-            .of(context)
-            .size
-            .width > 600) ? const EdgeInsets.all(10.0) : const EdgeInsets.all(5),
+        padding: (MediaQuery.of(context).size.width > 600)
+            ? const EdgeInsets.all(10.0)
+            : const EdgeInsets.all(5),
         child: BlocBuilder<MatchBloc, MatchState>(
           builder: (context, state) {
             if (state is MatchLoadingState) {
-              return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+              return const Center(
+                  child: SizedBox(
+                      width: 50,
+                      height: 50,
+                      child: CircularProgressIndicator()));
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add("${e.date}")).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];
 
-                for(int i=0;i<state.matchList.length;i++){
-                  if(state.matchList[i].isActive){
+                for (int i = 0; i < state.matchList.length; i++) {
+                  if (state.matchList[i].isActive) {
                     _selectedMatchId = matches[i];
                     _selectedMatch = state.matchList[i];
                   }
                 }
               }
 
-
-              if(matches.isNotEmpty) {
+              if (matches.isNotEmpty) {
                 if (_selectedMatch.winnerNumber != null) {
-                  winNumberController.text = _selectedMatch.winnerNumber.toString();
+                  winNumberController.text =
+                      _selectedMatch.winnerNumber.toString();
                   getLoadData();
                 } else {
                   winNumberController.text = "";
@@ -80,7 +82,9 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
 
                 return Center(
                   child: SizedBox(
-                    width: (MediaQuery.of(context).size.width >= 600) ? 600 : MediaQuery.of(context).size.width,
+                    width: (MediaQuery.of(context).size.width >= 600)
+                        ? 600
+                        : MediaQuery.of(context).size.width,
                     child: Column(
                       children: [
                         Row(
@@ -94,7 +98,8 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                                   if (newValue != null) {
                                     setState(() {
                                       _selectedMatchId = newValue;
-                                      _selectedMatch = state.matchList[matches.indexOf(newValue)];
+                                      _selectedMatch = state
+                                          .matchList[matches.indexOf(newValue)];
                                       if (_selectedMatch.winnerNumber != null) {
                                         getLoadData();
                                       }
@@ -128,29 +133,43 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Expanded(child: OutLinedTextField(controller: winNumberController, label: "Win Number", textInputType: TextInputType.number)),
+                            Expanded(
+                                child: OutLinedTextField(
+                                    controller: winNumberController,
+                                    label: "Win Number",
+                                    textInputType: TextInputType.number)),
                             10.paddingWidth,
-                            SizedBox(width: 100, height: 40, child: DefaultButton(onPressed: saveMatches, label: "သိမ်းမည်"))
+                            SizedBox(
+                                width: 100,
+                                height: 40,
+                                child: DefaultButton(
+                                    onPressed: saveMatches, label: "သိမ်းမည်"))
                           ],
                         ),
                         if (_selectedMatch.winnerNumber == null)
                           const Padding(
                             padding: EdgeInsets.only(top: 18.0),
-                            child: DefaultText("ပေါက်သီး မရှိပါ", style: TextStyles.bodyTextStyle),
+                            child: DefaultText("ပေါက်သီး မရှိပါ",
+                                style: TextStyles.bodyTextStyle),
                           ),
-                        if (_selectedMatch.winnerNumber != null) userAndWinAmount((_selectedType == "in") ? _selectedMatch.inAccounts : _selectedMatch.outAccounts)
+                        if (_selectedMatch.winnerNumber != null)
+                          userAndWinAmount((_selectedType == "in")
+                              ? _selectedMatch.inAccounts
+                              : _selectedMatch.outAccounts)
                       ],
                     ),
                   ),
                 );
-              }else{
+              } else {
                 return const EmptyMatchWidget();
               }
             }
             if (state is MatchErrorState) {
-              return DefaultText(state.errorMessage, style: TextStyles.bodyTextStyle.copyWith(color: Colors.red));
+              return DefaultText(state.errorMessage,
+                  style: TextStyles.bodyTextStyle.copyWith(color: Colors.red));
             }
-            return const DefaultText("Something went wrong", style: TextStyles.bodyTextStyle);
+            return const DefaultText("Something went wrong",
+                style: TextStyles.bodyTextStyle);
           },
         ),
       ),
@@ -158,7 +177,6 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
   }
 
   Widget userAndWinAmount(List<Account> accounts) {
-    int sumTotal = 0;
     return Expanded(
       child: BlocBuilder<WinNumberBloc, WinNumberState>(
         builder: (context, state) {
@@ -167,16 +185,22 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: DefaultText("Total = ${state.total}", style: TextStyles.titleTextStyle.copyWith(fontWeight: FontWeight.bold, color: Colors.green)),
+                  child: DefaultText("Total = ${state.total}",
+                      style: TextStyles.titleTextStyle.copyWith(
+                          fontWeight: FontWeight.bold, color: Colors.green)),
                 ),
                 Container(
                   padding: const EdgeInsets.all(4),
-                  color:  Colors.blue,
+                  color: Colors.blue,
                   child: Row(
                     children: [
-                      DefaultText("အမည်", style: TextStyles.titleTextStyle.copyWith(color: Colors.white)),
+                      DefaultText("အမည်",
+                          style: TextStyles.titleTextStyle
+                              .copyWith(color: Colors.white)),
                       const Spacer(),
-                      DefaultText("ဒဲ့", style: TextStyles.titleTextStyle.copyWith(color: Colors.white)),
+                      DefaultText("ဒဲ့",
+                          style: TextStyles.titleTextStyle
+                              .copyWith(color: Colors.white)),
                     ],
                   ),
                 ),
@@ -187,13 +211,19 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                         final name = state.winList.keys.elementAt(index);
                         final amount = state.winList.values.elementAt(index);
                         return Container(
-                          padding: const EdgeInsets.all( 4),
-                          color: (index % 2 == 0) ? Color(0xfff6f4f4) : Colors.transparent,
+                          padding: const EdgeInsets.all(4),
+                          color: (index % 2 == 0)
+                              ? Color(0xfff6f4f4)
+                              : Colors.transparent,
                           child: Row(
                             children: [
-                              DefaultText(name, style: TextStyles.titleTextStyle.copyWith(color: Colors.black)),
+                              DefaultText(name,
+                                  style: TextStyles.titleTextStyle
+                                      .copyWith(color: Colors.black)),
                               const Spacer(),
-                              DefaultText(formatMoney(amount), style: TextStyles.titleTextStyle.copyWith(color: Colors.black)),
+                              DefaultText(formatMoney(amount),
+                                  style: TextStyles.titleTextStyle
+                                      .copyWith(color: Colors.black)),
                             ],
                           ),
                         );
@@ -203,9 +233,12 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
             );
           }
           if (state is WinNumberLoadingState) {
-            return const Center(child: CircularProgressIndicator(),);
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
-          return const DefaultText("Something went wrongs", style: TextStyles.bodyTextStyle);
+          return const DefaultText("Something went wrongs",
+              style: TextStyles.bodyTextStyle);
         },
       ),
     );
@@ -218,8 +251,15 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
         DigitMatch tempMatch = _selectedMatch;
         tempMatch.winnerNumber = winNumberController.text.toString();
 
-        showLoadingDialog(context: context, title: "Set $_selectedMatchId 's Win Number", content: "saving...");
-        FirebaseFirestore.instance.collection(Collections.match).doc(_selectedMatchId).set(tempMatch.toJson()).then((value) {
+        showLoadingDialog(
+            context: context,
+            title: "Set $_selectedMatchId 's Win Number",
+            content: "saving...");
+        FirebaseFirestore.instance
+            .collection(Collections.match)
+            .doc(_selectedMatchId)
+            .set(tempMatch.toJson())
+            .then((value) {
           BlocProvider.of<MatchBloc>(context).add(GetAllMatch());
           Navigator.of(context).pop();
           Toasts.showSuccessToast("Save Successfully");
@@ -237,7 +277,13 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
   }
 
   void getLoadData() {
-    BlocProvider.of<WinNumberBloc>(context).add(
-        GetWinNumberEvent(accounts: (_selectedType == "in") ? _selectedMatch.inAccounts.where((element) => element.type=="input").toList() : _selectedMatch.outAccounts, type: _selectedType, matchId: _selectedMatch));
+    BlocProvider.of<WinNumberBloc>(context).add(GetWinNumberEvent(
+        accounts: (_selectedType == "in")
+            ? _selectedMatch.inAccounts
+                .where((element) => element.type == "input")
+                .toList()
+            : _selectedMatch.outAccounts,
+        type: _selectedType,
+        matchId: _selectedMatch));
   }
 }

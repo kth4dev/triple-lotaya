@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -44,38 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA4-nnN59UBU47tFkQXQBFcTjg90ls5kxQ',
-    appId: '1:618037327796:web:6682f1cfdc9e1f5356a4e1',
-    messagingSenderId: '618037327796',
-    projectId: 'lotayatwodigit',
-    authDomain: 'lotayatwodigit.firebaseapp.com',
-    storageBucket: 'lotayatwodigit.appspot.com',
-    measurementId: 'G-R5EFZ0EG4T',
+    apiKey: 'AIzaSyD0GZmKqk2zpCibMxPBTBPKXXPkTboWOCA',
+    appId: '1:775284469031:web:e915b1b2b30869a89a8d02',
+    messagingSenderId: '775284469031',
+    projectId: 'lotaya-3d',
+    authDomain: 'lotaya-3d.firebaseapp.com',
+    storageBucket: 'lotaya-3d.appspot.com',
+    measurementId: 'G-WKY4XRRWBV',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCB6pDt_J6FjM62JHi9bgIc5sitksYQBCs',
-    appId: '1:618037327796:android:eede800d3b04e3ec56a4e1',
-    messagingSenderId: '618037327796',
-    projectId: 'lotayatwodigit',
-    storageBucket: 'lotayatwodigit.appspot.com',
+    apiKey: 'AIzaSyCGxlLbwfuQQ2Pa9yB2v90YilGQeEieflI',
+    appId: '1:775284469031:android:9e8879458d3585429a8d02',
+    messagingSenderId: '775284469031',
+    projectId: 'lotaya-3d',
+    storageBucket: 'lotaya-3d.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC8qfG2DOac3FioEy-qOS7wuGsvTHF7G1w',
-    appId: '1:618037327796:ios:5d3d5dd54c32226c56a4e1',
-    messagingSenderId: '618037327796',
-    projectId: 'lotayatwodigit',
-    storageBucket: 'lotayatwodigit.appspot.com',
+    apiKey: 'AIzaSyDgjmnvseTSEqcTcXoDKpNWWkThUzfHv-s',
+    appId: '1:775284469031:ios:1ecded070c4eefc09a8d02',
+    messagingSenderId: '775284469031',
+    projectId: 'lotaya-3d',
+    storageBucket: 'lotaya-3d.appspot.com',
     iosBundleId: 'com.digit.lotaya',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC8qfG2DOac3FioEy-qOS7wuGsvTHF7G1w',
-    appId: '1:618037327796:ios:5d3d5dd54c32226c56a4e1',
-    messagingSenderId: '618037327796',
-    projectId: 'lotayatwodigit',
-    storageBucket: 'lotayatwodigit.appspot.com',
+    apiKey: 'AIzaSyDgjmnvseTSEqcTcXoDKpNWWkThUzfHv-s',
+    appId: '1:775284469031:ios:1ecded070c4eefc09a8d02',
+    messagingSenderId: '775284469031',
+    projectId: 'lotaya-3d',
+    storageBucket: 'lotaya-3d.appspot.com',
     iosBundleId: 'com.digit.lotaya',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyD0GZmKqk2zpCibMxPBTBPKXXPkTboWOCA',
+    appId: '1:775284469031:web:1452c7146c2684829a8d02',
+    messagingSenderId: '775284469031',
+    projectId: 'lotaya-3d',
+    authDomain: 'lotaya-3d.firebaseapp.com',
+    storageBucket: 'lotaya-3d.appspot.com',
+    measurementId: 'G-T06Y42R480',
+  );
+
 }

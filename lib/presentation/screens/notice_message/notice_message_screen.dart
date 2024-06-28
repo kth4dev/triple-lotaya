@@ -2,7 +2,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:lotaya/core/extensions/size_extension.dart';
 import 'package:lotaya/core/styles/appbars/appbar.dart';
 import 'package:lotaya/data/model/message.dart';
@@ -27,7 +26,6 @@ class _NoticeMessageScreenState extends State<NoticeMessageScreen> {
   String _selectedMatchId = "";
   late DigitMatch _selectedMatch;
   late TextEditingController winNumberController;
-  String _selectedFilter = "All";
   bool isFirstTime=true;
   @override
   void initState() {
@@ -52,7 +50,7 @@ class _NoticeMessageScreenState extends State<NoticeMessageScreen> {
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add("${e.date}")).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];

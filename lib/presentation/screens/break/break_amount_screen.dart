@@ -2,13 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lotaya/core/extensions/size_extension.dart';
-import 'package:lotaya/core/styles/appbars/appbar.dart';
 import 'package:lotaya/core/styles/styles.dart';
 import 'package:lotaya/presentation/widgets/empty_match.dart';
 
-import '../../../core/styles/dropdowns/under_line_drop_down_button.dart';
-import '../../../core/styles/textstyles/default_text.dart';
-import '../../../core/styles/textstyles/textstyles.dart';
 import '../../../data/collections.dart';
 import '../../../data/model/match.dart';
 import '../../bloc/matche/match_bloc.dart';
@@ -45,7 +41,7 @@ class _BreakAmountScreenState extends State<BreakAmountScreen> {
             }
             if (state is MatchLoadedState) {
               List<String> matches=[];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add("${e.date}")).toList();
               if(_selectedMatchId=="" && matches.isNotEmpty){
                 _selectedMatchId=matches[0];
                 _selectedMatch=state.matchList[0];

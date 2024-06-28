@@ -41,7 +41,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add(e.date)).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];
@@ -103,7 +103,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
           return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
         }
 
-        List<int> outDigits = List.generate(100, (index) => 0);
+        List<int> outDigits = List.generate(1000, (index) => 0);
         int outTotal = 0;
         snapshot.data!.docs.map((DocumentSnapshot document) {
           Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
@@ -126,7 +126,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
                 return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
               }
 
-              List<int> inDigits = List.generate(100, (index) => 0);
+              List<int> inDigits = List.generate(1000, (index) => 0);
               //win 
               List<Slip> inSlips=[];
               int inTotal = 0;
@@ -146,7 +146,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
 
               List<Digit> overDigitList = []; // just use value and amount
          //     int totalOverAmount = 0;
-              for (int i = 0; i < 100; i++) {
+              for (int i = 0; i < 1000; i++) {
                 int value = inDigits[i] - outDigits[i];
                 if (value > _selectedMatch.breakAmount) {
                //   totalOverAmount += value - _selectedMatch.breakAmount;
@@ -187,7 +187,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
                                   child: ListView.builder(
                                       shrinkWrap: true,
                                       physics: const NeverScrollableScrollPhysics(),
-                                      itemCount: 10,
+                                      itemCount: 100,
                                       itemBuilder: (context, endIndex) {
                                         int index = int.parse("$startIndex$endIndex");
                                         return Card(
@@ -205,7 +205,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
                                                   children: [
                                                     Align(
                                                         alignment: Alignment.center,
-                                                        child: DefaultText((index < 10) ? " 0$index" : " $index", style: TextStyle(fontSize: getDigitFontSize(context), fontWeight: FontWeight.bold))),
+                                                        child: DefaultText((index < 100) ? ((index<10)?"00$index":"0$index") : " $index", style: TextStyle(fontSize: getDigitFontSize(context), fontWeight: FontWeight.bold))),
                                                     Expanded(
                                                         child: Container(
                                                             padding: const EdgeInsets.only(right: 5),
@@ -245,11 +245,11 @@ class _DigitsScreenState extends State<DigitsScreen> {
 
   Color getBackGroundColor(int amount) {
     if (amount == _selectedMatch.breakAmount) {
-      return Color(0xffffffff);
+      return const Color(0xffffffff);
     } else if (amount > _selectedMatch.breakAmount) {
       return Colors.red;
     } else {
-      return Color(0xfff2f2f2);
+      return const Color(0xfff2f2f2);
     }
   }
 

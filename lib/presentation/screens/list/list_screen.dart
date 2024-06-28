@@ -45,7 +45,7 @@ class _ListScreenState extends State<ListScreen> {
             }
             if (state is MatchLoadedState) {
               List<String> matches = [];
-              state.matchList.map((e) => matches.add("${e.date} ${e.time}")).toList();
+              state.matchList.map((e) => matches.add(e.date)).toList();
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];
@@ -199,7 +199,7 @@ class _ListScreenState extends State<ListScreen> {
         buildRow(value: formatMoneyForNum(data.profit)),
       ]);
     }).toList();
-    list.add(DataRow(color: MaterialStateColor.resolveWith((states) => Color(0xfff5f3f3)), cells: [
+    list.add(DataRow(color: MaterialStateColor.resolveWith((states) => const Color(0xfff5f3f3)), cells: [
       buildRow(value: "Total"),
       buildRow(value: formatMoneyForNum(total.salePrices)),
       buildRow(value: formatMoneyForNum(total.commission)),
@@ -208,7 +208,7 @@ class _ListScreenState extends State<ListScreen> {
       buildRow(value: formatMoneyForNum(total.profit)),
     ]));
     return DataTable(
-        headingRowColor: MaterialStateColor.resolveWith((states) => Color(0xfff5f3f3)),
+        headingRowColor: MaterialStateColor.resolveWith((states) => const Color(0xfff5f3f3)),
         columns: [
           buildRowHeader("အမည်"),
           buildRowHeader("တင်ငွေ"),

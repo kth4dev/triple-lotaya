@@ -14,7 +14,46 @@
     ]
   },
   "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "rules": "n",
+    "indexes": "n"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "lotaya-3d",
+          "appId": "1:775284469031:android:9e8879458d3585429a8d02",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "lotaya-3d",
+          "appId": "1:775284469031:ios:1ecded070c4eefc09a8d02",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "lotaya-3d",
+          "appId": "1:775284469031:ios:1ecded070c4eefc09a8d02",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "lotaya-3d",
+          "configurations": {
+            "android": "1:775284469031:android:9e8879458d3585429a8d02",
+            "ios": "1:775284469031:ios:1ecded070c4eefc09a8d02",
+            "macos": "1:775284469031:ios:1ecded070c4eefc09a8d02",
+            "web": "1:775284469031:web:e915b1b2b30869a89a8d02",
+            "windows": "1:775284469031:web:1452c7146c2684829a8d02"
+          }
+        }
+      }
+    }
   }
 }
