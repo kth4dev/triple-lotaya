@@ -10,7 +10,7 @@ class DigitMatch{
   int closeTime;
   bool isActive;
   int breakAmount;
-  List<int>? hotNumbers;
+  List<String>? hotNumbers;
   List<Account> inAccounts;
   List<Account> outAccounts;
   List<DigitPermission> digitPermission;

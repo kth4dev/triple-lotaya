@@ -150,16 +150,16 @@ class _HotNumberScreenState extends State<HotNumberScreen> {
 
   Future<void> saveMatches() async {
     List digitList = breakAmountController.text.toString().split(".");
-    List<int> newList = [];
+    List<String> newList = [];
     for (var value in digitList) {
       int? digit=int.tryParse(value);
-      if(digit!=null){
-        if (!newList.contains(digit) && digit < 100) {
+      if(digit!=null && digit < 1000){
+        if (!newList.contains(value) ) {
           if (_selectedMatch.hotNumbers == null) {
-            newList.add(digit);
+            newList.add(value);
           } else {
-            if (!_selectedMatch.hotNumbers!.contains(digit)) {
-              newList.add(digit);
+            if (!_selectedMatch.hotNumbers!.contains(value)) {
+              newList.add(value);
             }
           }
         }
@@ -183,6 +183,7 @@ class _HotNumberScreenState extends State<HotNumberScreen> {
           FirebaseFirestore.instance.collection(Collections.match).doc(_selectedMatchId).set(_selectedMatch.toJson()).then((value) {
             Navigator.of(context).pop();
             BlocProvider.of<MatchBloc>(context).add(GetAllMatch());
+            breakAmountController.text="";
             Toasts.showSuccessToast("Save Successfully");
           }).catchError((error) {
             breakAmountController.text = _selectedMatch.breakAmount.toString();

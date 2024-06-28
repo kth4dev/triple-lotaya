@@ -25,11 +25,11 @@ class UserDigitsBloc extends Bloc<UserDigitsEvent, UserDigitsState> {
     if(event.type == "in"){
       for(Account account in event.digitMatch.inAccounts){
         if(account.type.toLowerCase()=="input"){
-          userDigitsModelList.add(UserDigitModel(userName: account.name, digitAmount: List.generate(100, (index) => 0)));
+          userDigitsModelList.add(UserDigitModel(userName: account.name, digitAmount: List.generate(1000, (index) => 0)));
         }
       }
     }else{
-      userDigitsModelList=event.digitMatch.outAccounts.map((e) =>UserDigitModel(userName: e.name, digitAmount: List.generate(100, (index) => 0))).toList();
+      userDigitsModelList=event.digitMatch.outAccounts.map((e) =>UserDigitModel(userName: e.name, digitAmount: List.generate(1000, (index) => 0))).toList();
     }
 
     int total = 0;

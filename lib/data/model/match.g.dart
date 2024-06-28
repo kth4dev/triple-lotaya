@@ -18,7 +18,7 @@ DigitMatch _$DigitMatchFromJson(Map<String, dynamic> json) => DigitMatch(
       isActive: json['isActive'] as bool,
       createdDate: json['createdDate'] as int,
       hotNumbers:
-          (json['hotNumbers'] as List<dynamic>?)?.map((e) => e as int).toList(),
+          (json['hotNumbers'] as List<dynamic>?)?.map((e) => e as String).toList(),
       winnerNumber: json['winnerNumber'] as String?,
       breakAmount: json['breakAmount'] as int,
       digitPermission: (json['digitPermission'] as List<dynamic>)

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lotaya/core/extensions/size_extension.dart';
 import 'package:lotaya/core/routes/routes.dart';
 import 'package:lotaya/core/styles/dialogs/error_dialog.dart';
+import 'package:lotaya/core/utils/digit_utils.dart';
 import 'package:lotaya/data/model/digit_permission.dart';
 import 'package:lotaya/data/model/match.dart';
 import 'package:lotaya/data/model/message.dart';
@@ -32,10 +33,13 @@ class SaleDetailsInputBoxWidget extends StatefulWidget {
   final SelectUser selectUser;
   final DigitMatch match;
 
-  const SaleDetailsInputBoxWidget({Key? key, required this.selectUser, required this.match}) : super(key: key);
+  const SaleDetailsInputBoxWidget(
+      {Key? key, required this.selectUser, required this.match})
+      : super(key: key);
 
   @override
-  State<SaleDetailsInputBoxWidget> createState() => _SaleDetailsInputBoxWidgetState();
+  State<SaleDetailsInputBoxWidget> createState() =>
+      _SaleDetailsInputBoxWidgetState();
 }
 
 class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
@@ -80,8 +84,14 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       return Row(
         children: [
           const Expanded(child: SizedBox()),
-          Expanded(flex: 2, child: Card(child: SizedBox(height: 670, child: _buildInputView))),
-          Expanded(child: (CacheHelper.getAccountInfo().type == "admin") ? Card(child: SizedBox(height: 670, child: _buildOverNumber)) : 0.paddingHeight),
+          Expanded(
+              flex: 2,
+              child:
+                  Card(child: SizedBox(height: 670, child: _buildInputView))),
+          Expanded(
+              child: (CacheHelper.getAccountInfo().type == "admin")
+                  ? Card(child: SizedBox(height: 670, child: _buildOverNumber))
+                  : 0.paddingHeight),
         ],
       );
     } else {
@@ -93,49 +103,71 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           ],
         );
       } else {
-        return SizedBox(height: MediaQuery.of(context).size.height - 120, child: _buildInputView);
+        return SizedBox(
+            height: MediaQuery.of(context).size.height - 120,
+            child: _buildInputView);
       }
     }
   }
 
   Widget get _buildOverNumber => StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.matchId).collection("out").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection(Collections.match)
+          .doc(widget.match.matchId)
+          .collection("out")
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return DefaultText("No Internet Connection", style: TextStyles.bodyTextStyle.copyWith(color: Colors.orange));
+          return DefaultText("No Internet Connection",
+              style: TextStyles.bodyTextStyle.copyWith(color: Colors.orange));
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+          return const Center(
+              child: SizedBox(
+                  width: 50, height: 50, child: CircularProgressIndicator()));
         }
 
-        List<int> outDigits = List.generate(100, (index) => 0);
+        List<int> outDigits = List.generate(1000, (index) => 0);
         snapshot.data!.docs.map((DocumentSnapshot document) {
           Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
           Slip s = Slip.fromJson(data);
           for (var receipt in s.receipts) {
             for (var digit in receipt.digitList) {
-              outDigits[int.parse(digit.value)] = outDigits[int.parse(digit.value)] + digit.amount;
+              outDigits[int.parse(digit.value)] =
+                  outDigits[int.parse(digit.value)] + digit.amount;
             }
           }
         }).toList();
 
         return StreamBuilder(
-            stream: FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.matchId).collection("in").snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection(Collections.match)
+                .doc(widget.match.matchId)
+                .collection("in")
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return DefaultText("No Internet Connection", style: TextStyles.bodyTextStyle.copyWith(color: Colors.orange));
+                return DefaultText("No Internet Connection",
+                    style: TextStyles.bodyTextStyle
+                        .copyWith(color: Colors.orange));
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+                return const Center(
+                    child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator()));
               }
 
-              List<int> inDigits = List.generate(100, (index) => 0);
+              List<int> inDigits = List.generate(1000, (index) => 0);
               snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                Map<String, dynamic> data =
+                    document.data()! as Map<String, dynamic>;
                 Slip s = Slip.fromJson(data);
                 for (var receipt in s.receipts) {
                   for (var digit in receipt.digitList) {
-                    inDigits[int.parse(digit.value)] = inDigits[int.parse(digit.value)] + digit.amount;
+                    inDigits[int.parse(digit.value)] =
+                        inDigits[int.parse(digit.value)] + digit.amount;
                   }
                 }
               }).toList();
@@ -147,7 +179,11 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                 int value = inDigits[i] - outDigits[i];
                 if (value > widget.match.breakAmount) {
                   totalOverAmount += value - widget.match.breakAmount;
-                  overDigitList.add(Digit(amount: value - widget.match.breakAmount, value: (i < 10) ? "0$i" : "$i", createdTime: 0, createUser: ""));
+                  overDigitList.add(Digit(
+                      amount: value - widget.match.breakAmount,
+                      value: (i < 10) ? "0$i" : "$i",
+                      createdTime: 0,
+                      createUser: ""));
                 }
               }
 
@@ -165,7 +201,9 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                             padding: const EdgeInsets.all(5),
                             child: DefaultText(
                               "Digit",
-                              style: TextStyles.bodyTextStyle.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                              style: TextStyles.bodyTextStyle.copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -175,7 +213,9 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                             padding: const EdgeInsets.all(5),
                             child: DefaultText(
                               "Amount",
-                              style: TextStyles.bodyTextStyle.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+                              style: TextStyles.bodyTextStyle.copyWith(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ),
                         ),
@@ -190,21 +230,25 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 1),
                                     padding: const EdgeInsets.all(5),
                                     child: DefaultText(
                                       overDigitList[index].value,
-                                      style: TextStyles.bodyTextStyle.copyWith(color: Colors.black),
+                                      style: TextStyles.bodyTextStyle
+                                          .copyWith(color: Colors.black),
                                     ),
                                   ),
                                 ),
                                 Expanded(
                                   child: Container(
-                                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 1),
                                     padding: const EdgeInsets.all(5),
                                     child: DefaultText(
                                       overDigitList[index].amount.toString(),
-                                      style: TextStyles.bodyTextStyle.copyWith(color: Colors.black),
+                                      style: TextStyles.bodyTextStyle
+                                          .copyWith(color: Colors.black),
                                     ),
                                   ),
                                 ),
@@ -216,8 +260,14 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        DefaultText("${overDigitList.length} - ", style: TextStyles.subTitleTextStyle.copyWith(color: Colors.black)),
-                        Center(child: DefaultText("Over-Max  ${totalOverAmount.toString()}", style: TextStyles.subTitleTextStyle.copyWith(color: Colors.red))),
+                        DefaultText("${overDigitList.length} - ",
+                            style: TextStyles.subTitleTextStyle
+                                .copyWith(color: Colors.black)),
+                        Center(
+                            child: DefaultText(
+                                "Over-Max  ${totalOverAmount.toString()}",
+                                style: TextStyles.subTitleTextStyle
+                                    .copyWith(color: Colors.red))),
                       ],
                     ),
                     const Divider(),
@@ -233,7 +283,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                                   for (var i in overDigitList) {
                                     result += "${i.value}  ${i.amount}\n";
                                   }
-                                  Clipboard.setData(ClipboardData(text: result));
+                                  Clipboard.setData(
+                                      ClipboardData(text: result));
                                 },
                                 label: "Copy"),
                           ),
@@ -242,7 +293,13 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                             width: 100,
                             child: DefaultButton(
                                 onPressed: () {
-                                  goToNextPage(context, SaleMessageScreen(currentSlip: int.parse(currentSlipController.text), selectedAccount: widget.selectUser, selectedMatch: widget.match));
+                                  goToNextPage(
+                                      context,
+                                      SaleMessageScreen(
+                                          currentSlip: int.parse(
+                                              currentSlipController.text),
+                                          selectedAccount: widget.selectUser,
+                                          selectedMatch: widget.match));
                                 },
                                 label: "Message"),
                           ),
@@ -258,16 +315,31 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
   Widget get _buildInputView => Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          children: [_buildSelectUserView, _buildHotNumbers, _buildReceiptsList, _buildCurrentSlip, _buildInputBox, _buildSaveButton],
+          children: [
+            _buildSelectUserView,
+            _buildHotNumbers,
+            _buildReceiptsList,
+            _buildCurrentSlip,
+            _buildInputBox,
+            _buildSaveButton
+          ],
         ),
       );
-  void showCloseMatch(){
-    showErrorDialog(context: context, title: "Close", content: "This Match is closed");
+
+  void showCloseMatch() {
+    showErrorDialog(
+        context: context, title: "Close", content: "This Match is closed");
   }
+
   Widget get _buildHotNumbers => StreamBuilder(
-      stream: FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.matchId).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection(Collections.match)
+          .doc(widget.match.matchId)
+          .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.hasData && snapshot.data!.exists && snapshot.data!.data() != null) {
+        if (snapshot.hasData &&
+            snapshot.data!.exists &&
+            snapshot.data!.data() != null) {
           // Access the document data
           Map<String, dynamic> data = snapshot.data!.data()!;
           DigitMatch updatedMatch = DigitMatch.fromJson(data);
@@ -281,14 +353,18 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           return Row(
             children: [
               8.paddingWidth,
-              DefaultText("Hot :", style: TextStyles.bodyTextStyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
+              DefaultText("Hot :",
+                  style: TextStyles.bodyTextStyle.copyWith(
+                      color: Colors.red, fontWeight: FontWeight.bold)),
               Wrap(
                 children: widget.match.hotNumbers
                         ?.map((e) => Card(
                               color: Colors.red,
                               child: Padding(
                                 padding: const EdgeInsets.all(3.0),
-                                child: DefaultText(e.toString(), style: TextStyles.bodyTextStyle.copyWith(color: Colors.white)),
+                                child: DefaultText(e.toString(),
+                                    style: TextStyles.bodyTextStyle
+                                        .copyWith(color: Colors.white)),
                               ),
                             ))
                         .toList() ??
@@ -308,12 +384,16 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                     .collection(Collections.match)
                     .doc(widget.match.matchId)
                     .collection(widget.selectUser.userType)
-                    .doc("${widget.selectUser.userName}${currentSlipController.text}")
+                    .doc(
+                        "${widget.selectUser.userName}${currentSlipController.text}")
                     .snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data!.exists && snapshot.data!.data() != null) {
+                  if (snapshot.hasData &&
+                      snapshot.data!.exists &&
+                      snapshot.data!.data() != null) {
                     // Access the document data
-                    Map<String, dynamic> data = snapshot.data!.data()! as Map<String, dynamic>;
+                    Map<String, dynamic> data =
+                        snapshot.data!.data()! as Map<String, dynamic>;
                     _selectedSlip = Slip.fromJson(data);
                   } else {
                     _selectedSlip = null;
@@ -401,11 +481,13 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             itemCount: _selectedSlip!.receipts.length,
             itemBuilder: (context, receiptIndex) {
               return ListView.builder(
-                  itemCount: _selectedSlip!.receipts[receiptIndex].digitList.length,
+                  itemCount:
+                      _selectedSlip!.receipts[receiptIndex].digitList.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, digitIndex) {
-                    return _buildRow(_selectedSlip!.receipts[receiptIndex], digitIndex);
+                    return _buildRow(
+                        _selectedSlip!.receipts[receiptIndex], digitIndex);
                   });
             }),
       );
@@ -445,7 +527,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                   width: 80,
                   child: DefaultText(
                     receipt.type,
-                    style: TextStyles.bodyTextStyle.copyWith(color: Colors.black),
+                    style:
+                        TextStyles.bodyTextStyle.copyWith(color: Colors.black),
                   ),
                 ),
               )
@@ -464,36 +547,51 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                         _selectedSlip!.totalAmount -= receipt.totalAmount;
                         _selectedSlip!.receipts.remove(receipt);
 
-                        int? currentSlipId = int.tryParse(currentSlipController.text);
+                        int? currentSlipId =
+                            int.tryParse(currentSlipController.text);
                         if (currentSlipId != null) {
                           await FirebaseFirestore.instance
                               .collection(Collections.match)
                               .doc(widget.match.date)
                               .collection(widget.selectUser.userType)
-                              .doc("${widget.selectUser.userName}${currentSlipController.text}")
+                              .doc(
+                                  "${widget.selectUser.userName}${currentSlipController.text}")
                               .set(_selectedSlip!.toJson())
                               .catchError((error) {
                             Toasts.showErrorMessageToast("Faild : $error");
-                            currentSlipController.text = currentSlipId.toString();
-                            BlocProvider.of<ReceiptListBloc>(context).add(ChangeReceiptListEvent());
+                            currentSlipController.text =
+                                currentSlipId.toString();
+                            BlocProvider.of<ReceiptListBloc>(context)
+                                .add(ChangeReceiptListEvent());
                           }).whenComplete(() {
-                            if (int.parse(lastSlipController.text) + 1 == int.parse(currentSlipController.text)) {
-                              BlocProvider.of<SlipIdBloc>(context).add(RefreshSlipIdEvent());
+                            if (int.parse(lastSlipController.text) + 1 ==
+                                int.parse(currentSlipController.text)) {
+                              BlocProvider.of<SlipIdBloc>(context)
+                                  .add(RefreshSlipIdEvent());
                             }
 
-                            if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
+                            if (DateTime.now().millisecondsSinceEpoch >
+                                widget.match.closeTime) {
                               showNoticeToast(message: "Over Time");
                             }
 
-                            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                                title: overTimeDeleteMessage,
-                                content: "${CacheHelper.getAccountInfo().name} --> [${receipt.type}]  ${widget.selectUser.userName}(slip ${currentSlipController.text})",
-                                matchId: widget.match.matchId,
-                                slipId: "${widget.selectUser.userName}${currentSlipController.text}",
-                                slipUserId: widget.selectUser.userName,
-                                updatedUserId: CacheHelper.getAccountInfo().name,
-                                createdTimed: DateTime.now().millisecondsSinceEpoch)
-                                .toJson());
+                            FirebaseFirestore.instance
+                                .collection(Collections.match)
+                                .doc(widget.match.date)
+                                .collection(Collections.message)
+                                .add(Message(
+                                        title: overTimeDeleteMessage,
+                                        content:
+                                            "${CacheHelper.getAccountInfo().name} --> [${receipt.type}]  ${widget.selectUser.userName}(slip ${currentSlipController.text})",
+                                        matchId: widget.match.matchId,
+                                        slipId:
+                                            "${widget.selectUser.userName}${currentSlipController.text}",
+                                        slipUserId: widget.selectUser.userName,
+                                        updatedUserId:
+                                            CacheHelper.getAccountInfo().name,
+                                        createdTimed: DateTime.now()
+                                            .millisecondsSinceEpoch)
+                                    .toJson());
                           });
                         }
                       },
@@ -516,7 +614,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                     _selectedSlip!.totalAmount -= receipt.totalAmount;
                     _selectedSlip!.receipts.remove(receipt);
                   } else {
-                    _selectedSlip!.totalAmount -= receipt.digitList[index].amount;
+                    _selectedSlip!.totalAmount -=
+                        receipt.digitList[index].amount;
                     receipt.totalAmount -= receipt.digitList[index].amount;
                     receipt.digitList.removeAt(index);
                   }
@@ -526,28 +625,41 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                         .collection(Collections.match)
                         .doc(widget.match.date)
                         .collection(widget.selectUser.userType)
-                        .doc("${widget.selectUser.userName}${currentSlipController.text}")
+                        .doc(
+                            "${widget.selectUser.userName}${currentSlipController.text}")
                         .set(_selectedSlip!.toJson())
                         .catchError((error) {
                       Toasts.showErrorMessageToast("Failed : $error");
                       currentSlipController.text = currentSlipId.toString();
-                      BlocProvider.of<ReceiptListBloc>(context).add(ChangeReceiptListEvent());
+                      BlocProvider.of<ReceiptListBloc>(context)
+                          .add(ChangeReceiptListEvent());
                     }).whenComplete(() {
-                      if (int.parse(lastSlipController.text) + 1 == int.parse(currentSlipController.text)) {
-                        BlocProvider.of<SlipIdBloc>(context).add(RefreshSlipIdEvent());
+                      if (int.parse(lastSlipController.text) + 1 ==
+                          int.parse(currentSlipController.text)) {
+                        BlocProvider.of<SlipIdBloc>(context)
+                            .add(RefreshSlipIdEvent());
                       }
-                      if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
+                      if (DateTime.now().millisecondsSinceEpoch >
+                          widget.match.closeTime) {
                         showNoticeToast(message: "Over Time");
                       }
-                      FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                          title: overTimeDeleteMessage,
-                          content: "${CacheHelper.getAccountInfo().name} deleted [${receipt.digitList[index].value}]  ${widget.selectUser.userName}( slip ${currentSlipController.text} )",
-                          matchId: widget.match.matchId,
-                          slipId: "${widget.selectUser.userName}${currentSlipController.text}",
-                          slipUserId: widget.selectUser.userName,
-                          updatedUserId: CacheHelper.getAccountInfo().name,
-                          createdTimed: DateTime.now().millisecondsSinceEpoch)
-                          .toJson());
+                      FirebaseFirestore.instance
+                          .collection(Collections.match)
+                          .doc(widget.match.date)
+                          .collection(Collections.message)
+                          .add(Message(
+                                  title: overTimeDeleteMessage,
+                                  content:
+                                      "${CacheHelper.getAccountInfo().name} deleted [${receipt.digitList[index].value}]  ${widget.selectUser.userName}( slip ${currentSlipController.text} )",
+                                  matchId: widget.match.matchId,
+                                  slipId:
+                                      "${widget.selectUser.userName}${currentSlipController.text}",
+                                  slipUserId: widget.selectUser.userName,
+                                  updatedUserId:
+                                      CacheHelper.getAccountInfo().name,
+                                  createdTimed:
+                                      DateTime.now().millisecondsSinceEpoch)
+                              .toJson());
                     });
                   }
                 },
@@ -562,16 +674,16 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
     );
   }
 
-  void showNoticeToast({required String message}){
-    showToast(message,position: ToastPosition.top);
+  void showNoticeToast({required String message}) {
+    showToast(message, position: ToastPosition.top);
   }
 
-  void showHotNoticeToast({required String message}){
-    showToast(message,position: ToastPosition.center);
+  void showHotNoticeToast({required String message}) {
+    showToast(message, position: ToastPosition.center);
   }
 
-  void showPermissionNoticeToast({required String message}){
-    showToast(message,position: ToastPosition.bottom);
+  void showPermissionNoticeToast({required String message}) {
+    showToast(message, position: ToastPosition.bottom);
   }
 
   Widget get _buildReceiptTotalAmount => Row(
@@ -615,7 +727,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
               controller: digitController,
               keyboardType: TextInputType.phone,
               decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                 border: OutlineInputBorder(),
                 hintText: "Digits",
               ),
@@ -624,8 +737,9 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             Expanded(
                 child: TextFormField(
               onFieldSubmitted: (value) {
-                if (digitController.text.isNotEmpty && amountController.text.isNotEmpty) {
-                  if(widget.match.isActive){
+                if (digitController.text.isNotEmpty &&
+                    amountController.text.isNotEmpty) {
+                  if (widget.match.isActive) {
                     insertValues();
                   }
                 }
@@ -635,7 +749,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
               controller: amountController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                 border: OutlineInputBorder(),
                 hintText: "Amount",
               ),
@@ -644,7 +759,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             Expanded(
                 child: TextFormField(
               onFieldSubmitted: (value) {
-                if(widget.match.isActive){
+                if (widget.match.isActive) {
                   insertRValues();
                 }
               },
@@ -652,7 +767,12 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
               textInputAction: TextInputAction.done,
               controller: rAmountController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0), border: OutlineInputBorder(), hintText: "R", labelText: "R"),
+              decoration: const InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                  border: OutlineInputBorder(),
+                  hintText: "R",
+                  labelText: "R"),
             )),
           ],
         ),
@@ -683,17 +803,74 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
     String inputs = digitController.text.toString();
     List<Receipt> currentReceipts = [];
 
+    if (inputs == "**") {
+      List<Digit> digitList = [];
+      int totalAmount = 0;
+      for (var f = 0; f < 10; f++) {
+        totalAmount += int.parse(amountController.text);
+        digitList.add(Digit(
+            amount: int.parse(amountController.text),
+            value: "$f$f$f",
+            createdTime: DateTime.now().millisecondsSinceEpoch,
+            createUser: CacheHelper.getAccountInfo().name));
+      }
+      Receipt receipt =
+      Receipt(type: "**", digitList: digitList, totalAmount: totalAmount);
+      currentReceipts.add(receipt);
+    }  else if (inputs.endsWith("+")) {
+      var digitList = digitController.text.replaceAll("+", "").split(".");
+      for (var digit in digitList) {
+        final d = DigitUtils.convertToListOfDigits(digit);
+        final rValues = DigitUtils.generateRValues(d);
+        int? value = int.tryParse(digit);
+        if (value != null && value < 1000 && value >= 0) {
+          Receipt receipt = Receipt(
+              type: "$digit+",
+              digitList: rValues.map((value)=>  Digit(
+                  amount: int.parse(amountController.text) ~/ rValues.length,
+                  value: value,
+                  createdTime: DateTime.now().millisecondsSinceEpoch,
+                  createUser: CacheHelper.getAccountInfo().name)).toList(),
+              totalAmount: int.parse(amountController.text));
+          currentReceipts.add(receipt);
+        }
+      }
+    } else {
+      var digitList = digitController.text.split(".");
+      for (var digit in digitList) {
+        int? value = int.tryParse(digit);
+        if (value != null && value < 1000 && value >= 0) {
+          Receipt receipt = Receipt(
+              type: digit,
+              digitList: [
+                Digit(
+                    amount: int.parse(amountController.text),
+                    value: digit,
+                    createdTime: DateTime.now().millisecondsSinceEpoch,
+                    createUser: CacheHelper.getAccountInfo().name),
+              ],
+              totalAmount: int.parse(amountController.text));
+          currentReceipts.add(receipt);
+        }
+      }
+    }
+
     //contain formula
-    if (inputs == "-") {
+   /* if (inputs == "-") {
       final nk = ["07", "18", "24", "35", "42", "53", "69", "70", "81", "96"];
       List<Digit> digitList = [];
       int totalAmount = 0;
       for (var digit in nk) {
-        digitList.add(Digit(amount: int.parse(amountController.text), value: digit, createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+        digitList.add(Digit(
+            amount: int.parse(amountController.text),
+            value: digit,
+            createdTime: DateTime.now().millisecondsSinceEpoch,
+            createUser: CacheHelper.getAccountInfo().name));
         totalAmount += int.parse(amountController.text);
       }
       if (digitList.isNotEmpty) {
-        Receipt receipt = Receipt(type: "-", digitList: digitList, totalAmount: totalAmount);
+        Receipt receipt =
+            Receipt(type: "-", digitList: digitList, totalAmount: totalAmount);
         currentReceipts.add(receipt);
       }
     } else if (inputs == "*") {
@@ -702,11 +879,16 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       for (var f = 0; f < 10; f++) {
         int power = f + 5;
         int s = (power < 10) ? power : (power - 10);
-        digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$s", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+        digitList.add(Digit(
+            amount: int.parse(amountController.text),
+            value: "$f$s",
+            createdTime: DateTime.now().millisecondsSinceEpoch,
+            createUser: CacheHelper.getAccountInfo().name));
         totalAmount += int.parse(amountController.text);
       }
       if (digitList.isNotEmpty) {
-        Receipt receipt = Receipt(type: "*", digitList: digitList, totalAmount: totalAmount);
+        Receipt receipt =
+            Receipt(type: "*", digitList: digitList, totalAmount: totalAmount);
         currentReceipts.add(receipt);
       }
     } else if (inputs == "**") {
@@ -714,9 +896,14 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       int totalAmount = 0;
       for (var f = 0; f < 10; f++) {
         totalAmount += int.parse(amountController.text);
-        digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$f", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+        digitList.add(Digit(
+            amount: int.parse(amountController.text),
+            value: "$f$f$f",
+            createdTime: DateTime.now().millisecondsSinceEpoch,
+            createUser: CacheHelper.getAccountInfo().name));
       }
-      Receipt receipt = Receipt(type: "**", digitList: digitList, totalAmount: totalAmount);
+      Receipt receipt =
+          Receipt(type: "**", digitList: digitList, totalAmount: totalAmount);
       currentReceipts.add(receipt);
     } else if (inputs.endsWith("-+")) {
       List<Digit> digitList = [];
@@ -726,13 +913,18 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           for (var s = 0; s < 10; s++) {
             if (s % 2 == 0) {
               totalAmount += int.parse(amountController.text);
-              digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$s", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+              digitList.add(Digit(
+                  amount: int.parse(amountController.text),
+                  value: "$f$s",
+                  createdTime: DateTime.now().millisecondsSinceEpoch,
+                  createUser: CacheHelper.getAccountInfo().name));
             }
           }
         }
       }
       if (digitList.isNotEmpty) {
-        Receipt receipt = Receipt(type: "-+", digitList: digitList, totalAmount: totalAmount);
+        Receipt receipt =
+            Receipt(type: "-+", digitList: digitList, totalAmount: totalAmount);
         currentReceipts.add(receipt);
       }
     } else if (inputs.endsWith("+-")) {
@@ -743,13 +935,18 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           for (var s = 0; s < 10; s++) {
             if (s % 2 != 0) {
               totalAmount += int.parse(amountController.text);
-              digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$s", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+              digitList.add(Digit(
+                  amount: int.parse(amountController.text),
+                  value: "$f$s",
+                  createdTime: DateTime.now().millisecondsSinceEpoch,
+                  createUser: CacheHelper.getAccountInfo().name));
             }
           }
         }
       }
       if (digitList.isNotEmpty) {
-        Receipt receipt = Receipt(type: "+-", digitList: digitList, totalAmount: totalAmount);
+        Receipt receipt =
+            Receipt(type: "+-", digitList: digitList, totalAmount: totalAmount);
         currentReceipts.add(receipt);
       }
     } else if (inputs.endsWith("-")) {
@@ -759,14 +956,25 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
         int totalAmount = 0;
         for (var f = 0; f < 10; f++) {
           totalAmount += int.parse(amountController.text);
-          digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$roundNumber", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+          digitList.add(Digit(
+              amount: int.parse(amountController.text),
+              value: "$f$roundNumber",
+              createdTime: DateTime.now().millisecondsSinceEpoch,
+              createUser: CacheHelper.getAccountInfo().name));
           if (f != roundNumber) {
             totalAmount += int.parse(amountController.text);
-            digitList.add(Digit(amount: int.parse(amountController.text), value: "$roundNumber$f", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+            digitList.add(Digit(
+                amount: int.parse(amountController.text),
+                value: "$roundNumber$f",
+                createdTime: DateTime.now().millisecondsSinceEpoch,
+                createUser: CacheHelper.getAccountInfo().name));
           }
         }
         if (digitList.isNotEmpty) {
-          Receipt receipt = Receipt(type: "$roundNumber-", digitList: digitList, totalAmount: totalAmount);
+          Receipt receipt = Receipt(
+              type: "$roundNumber-",
+              digitList: digitList,
+              totalAmount: totalAmount);
           currentReceipts.add(receipt);
         }
       }
@@ -777,24 +985,39 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
         int totalAmount = 0;
         for (var s = 0; s < 10; s++) {
           totalAmount += int.parse(amountController.text);
-          digitList.add(Digit(amount: int.parse(amountController.text), value: "$firstNumber$s", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+          digitList.add(Digit(
+              amount: int.parse(amountController.text),
+              value: "$firstNumber$s",
+              createdTime: DateTime.now().millisecondsSinceEpoch,
+              createUser: CacheHelper.getAccountInfo().name));
         }
         if (digitList.isNotEmpty) {
-          Receipt receipt = Receipt(type: "$firstNumber*", digitList: digitList, totalAmount: totalAmount);
+          Receipt receipt = Receipt(
+              type: "$firstNumber*",
+              digitList: digitList,
+              totalAmount: totalAmount);
           currentReceipts.add(receipt);
         }
       }
     } else if (inputs.startsWith("*")) {
-      int? secondNumber = int.tryParse(digitController.text.replaceAll("*", ""));
+      int? secondNumber =
+          int.tryParse(digitController.text.replaceAll("*", ""));
       if (secondNumber != null) {
         List<Digit> digitList = [];
         int totalAmount = 0;
         for (var f = 0; f < 10; f++) {
           totalAmount += int.parse(amountController.text);
-          digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$secondNumber", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+          digitList.add(Digit(
+              amount: int.parse(amountController.text),
+              value: "$f$secondNumber",
+              createdTime: DateTime.now().millisecondsSinceEpoch,
+              createUser: CacheHelper.getAccountInfo().name));
         }
         if (digitList.isNotEmpty) {
-          Receipt receipt = Receipt(type: "*$secondNumber", digitList: digitList, totalAmount: totalAmount);
+          Receipt receipt = Receipt(
+              type: "*$secondNumber",
+              digitList: digitList,
+              totalAmount: totalAmount);
           currentReceipts.add(receipt);
         }
       }
@@ -806,8 +1029,16 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           Receipt receipt = Receipt(
               type: "$digit+",
               digitList: [
-                Digit(amount: int.parse(amountController.text) ~/ 2, value: digit, createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name),
-                Digit(amount: int.parse(amountController.text) ~/ 2, value: reverseString(digit), createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name),
+                Digit(
+                    amount: int.parse(amountController.text) ~/ 2,
+                    value: digit,
+                    createdTime: DateTime.now().millisecondsSinceEpoch,
+                    createUser: CacheHelper.getAccountInfo().name),
+                Digit(
+                    amount: int.parse(amountController.text) ~/ 2,
+                    value: reverseString(digit),
+                    createdTime: DateTime.now().millisecondsSinceEpoch,
+                    createUser: CacheHelper.getAccountInfo().name),
               ],
               totalAmount: int.parse(amountController.text));
           currentReceipts.add(receipt);
@@ -820,14 +1051,22 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
         int totalAmount = 0;
         for (var f = 0; f < 10; f++) {
           for (var s = 0; s < 10; s++) {
-            if ((f + s) == breakNumber || (f + s).toString().endsWith(breakNumber.toString())) {
+            if ((f + s) == breakNumber ||
+                (f + s).toString().endsWith(breakNumber.toString())) {
               totalAmount += int.parse(amountController.text);
-              digitList.add(Digit(amount: int.parse(amountController.text), value: "$f$s", createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name));
+              digitList.add(Digit(
+                  amount: int.parse(amountController.text),
+                  value: "$f$s",
+                  createdTime: DateTime.now().millisecondsSinceEpoch,
+                  createUser: CacheHelper.getAccountInfo().name));
             }
           }
         }
         if (digitList.isNotEmpty) {
-          Receipt receipt = Receipt(type: "$breakNumber/", digitList: digitList, totalAmount: totalAmount);
+          Receipt receipt = Receipt(
+              type: "$breakNumber/",
+              digitList: digitList,
+              totalAmount: totalAmount);
           currentReceipts.add(receipt);
         }
       }
@@ -839,13 +1078,17 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           Receipt receipt = Receipt(
               type: digit,
               digitList: [
-                Digit(amount: int.parse(amountController.text), value: digit, createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name),
+                Digit(
+                    amount: int.parse(amountController.text),
+                    value: digit,
+                    createdTime: DateTime.now().millisecondsSinceEpoch,
+                    createUser: CacheHelper.getAccountInfo().name),
               ],
               totalAmount: int.parse(amountController.text));
           currentReceipts.add(receipt);
         }
       }
-    }
+    }*/
 
     int? currentSlip = int.tryParse(currentSlipController.text);
     int tempTotal = int.tryParse(userTotalAmountController.text) ?? 0;
@@ -863,21 +1106,32 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             .doc(widget.match.date)
             .collection(widget.selectUser.userType)
             .doc("${widget.selectUser.userName}$currentSlip")
-            .set(Slip(totalAmount: tAmount, receipts: currentReceipts, userName: widget.selectUser.userName, id: currentSlip, isSave: false).toJson())
+            .set(Slip(
+                    totalAmount: tAmount,
+                    receipts: currentReceipts,
+                    userName: widget.selectUser.userName,
+                    id: currentSlip,
+                    isSave: false)
+                .toJson())
             .catchError((error) {})
             .whenComplete(() {
           checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
           if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
             showNoticeToast(message: "Over Time");
-            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                    title: overTimeInsertMessage,
-                    content: "${CacheHelper.getAccountInfo().name} -->  ${widget.selectUser.userName}(slip $currentSlip)",
-                    matchId: widget.match.matchId,
-                    slipId: "${widget.selectUser.userName}$currentSlip",
-                    slipUserId: widget.selectUser.userName,
-                    updatedUserId: CacheHelper.getAccountInfo().name,
-                    createdTimed: DateTime.now().millisecondsSinceEpoch)
-                .toJson());
+            FirebaseFirestore.instance
+                .collection(Collections.match)
+                .doc(widget.match.date)
+                .collection(Collections.message)
+                .add(Message(
+                        title: overTimeInsertMessage,
+                        content:
+                            "${CacheHelper.getAccountInfo().name} -->  ${widget.selectUser.userName}(slip $currentSlip)",
+                        matchId: widget.match.matchId,
+                        slipId: "${widget.selectUser.userName}$currentSlip",
+                        slipUserId: widget.selectUser.userName,
+                        updatedUserId: CacheHelper.getAccountInfo().name,
+                        createdTimed: DateTime.now().millisecondsSinceEpoch)
+                    .toJson());
           }
         });
       } else {
@@ -902,18 +1156,24 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
           if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
             showNoticeToast(message: "Over Time");
-            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                    title: overTimeInsertMessage,
-                    content: "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)",
-                    matchId: widget.match.matchId,
-                    slipId: "${widget.selectUser.userName}$currentSlip",
-                    slipUserId: widget.selectUser.userName,
-                    updatedUserId: CacheHelper.getAccountInfo().name,
-                    createdTimed: DateTime.now().millisecondsSinceEpoch)
-                .toJson());
+            FirebaseFirestore.instance
+                .collection(Collections.match)
+                .doc(widget.match.date)
+                .collection(Collections.message)
+                .add(Message(
+                        title: overTimeInsertMessage,
+                        content:
+                            "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)",
+                        matchId: widget.match.matchId,
+                        slipId: "${widget.selectUser.userName}$currentSlip",
+                        slipUserId: widget.selectUser.userName,
+                        updatedUserId: CacheHelper.getAccountInfo().name,
+                        createdTimed: DateTime.now().millisecondsSinceEpoch)
+                    .toJson());
           }
         });
-        if (int.parse(lastSlipController.text) + 1 == int.parse(currentSlipController.text)) {
+        if (int.parse(lastSlipController.text) + 1 ==
+            int.parse(currentSlipController.text)) {
           BlocProvider.of<SlipIdBloc>(context).add(RefreshSlipIdEvent());
         }
       }
@@ -929,12 +1189,14 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
     return reversedString;
   }
 
-  void checkDigitPermission(List<Receipt> newReceipt, List<int> userDigitsAmounts, int userDigitsTotalAmount) {
+  void checkDigitPermission(List<Receipt> newReceipt,
+      List<int> userDigitsAmounts, int userDigitsTotalAmount) {
     _scrollDown();
     String hotsNumber = "";
     for (var receipt in newReceipt) {
       for (var digit in receipt.digitList) {
-        if ((widget.match.hotNumbers ?? []).contains(int.tryParse(digit.value))) {
+        if ((widget.match.hotNumbers ?? [])
+            .contains(int.tryParse(digit.value))) {
           if (hotsNumber.isNotEmpty) {
             hotsNumber += ", ";
           }
@@ -945,15 +1207,21 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
 
     if (hotsNumber.isNotEmpty) {
       showHotNoticeToast(message: "$addHotNumberMessage  [$hotsNumber]");
-      FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-              title: "$addHotNumberMessage  [$hotsNumber]",
-              content: "${CacheHelper.getAccountInfo().name}  -->  ${widget.selectUser.userName} (slip ${currentSlipController.text})",
-              matchId: widget.match.matchId,
-              slipId: "${widget.selectUser.userName}${currentSlipController.text}",
-              slipUserId: widget.selectUser.userName,
-              updatedUserId: CacheHelper.getAccountInfo().name,
-              createdTimed: DateTime.now().millisecondsSinceEpoch)
-          .toJson());
+      FirebaseFirestore.instance
+          .collection(Collections.match)
+          .doc(widget.match.date)
+          .collection(Collections.message)
+          .add(Message(
+                  title: "$addHotNumberMessage  [$hotsNumber]",
+                  content:
+                      "${CacheHelper.getAccountInfo().name}  -->  ${widget.selectUser.userName} (slip ${currentSlipController.text})",
+                  matchId: widget.match.matchId,
+                  slipId:
+                      "${widget.selectUser.userName}${currentSlipController.text}",
+                  slipUserId: widget.selectUser.userName,
+                  updatedUserId: CacheHelper.getAccountInfo().name,
+                  createdTimed: DateTime.now().millisecondsSinceEpoch)
+              .toJson());
     }
 
     //////// Digit Permission ////////////
@@ -973,34 +1241,49 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       }
       int allTotal = tempTotal + userDigitsTotalAmount;
       if (allTotal > digitPermission.totalPermission!) {
-        showPermissionNoticeToast(message: "Over Total [ ${widget.selectUser.userName} ]");
-        FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                title: "Over Total [ ${widget.selectUser.userName} ]",
-                content:
-                    "${CacheHelper.getAccountInfo().name} make over total amount. Current Total = $allTotal | Permission = [${digitPermission.totalPermission} ] | Over = ${allTotal - digitPermission.totalPermission!}",
-                matchId: widget.match.matchId,
-                slipId: "${widget.selectUser.userName}${currentSlipController.text}",
-                slipUserId: widget.selectUser.userName,
-                updatedUserId: CacheHelper.getAccountInfo().name,
-                createdTimed: DateTime.now().millisecondsSinceEpoch)
-            .toJson());
-      }
-      /////// digit permission //////////
-      for (var receipt in newReceipt) {
-        for (var digit in receipt.digitList) {
-          num tempDigitTotal = userDigitsAmounts[int.parse(digit.value)] + digit.amount;
-          if (tempDigitTotal > digitPermission.digitPermission!) {
-            showPermissionNoticeToast(message: "Over - ${digit.value} [ ${widget.selectUser.userName} ]");
-            FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                    title: "Over - ${digit.value} [ ${widget.selectUser.userName} ]",
+        showPermissionNoticeToast(
+            message: "Over Total [ ${widget.selectUser.userName} ]");
+        FirebaseFirestore.instance
+            .collection(Collections.match)
+            .doc(widget.match.date)
+            .collection(Collections.message)
+            .add(Message(
+                    title: "Over Total [ ${widget.selectUser.userName} ]",
                     content:
-                        "${CacheHelper.getAccountInfo().name} make over digit amount. Current Total = $tempDigitTotal | Permission = [${digitPermission.digitPermission} ] | Over = ${tempDigitTotal - digitPermission.digitPermission!}",
+                        "${CacheHelper.getAccountInfo().name} make over total amount. Current Total = $allTotal | Permission = [${digitPermission.totalPermission} ] | Over = ${allTotal - digitPermission.totalPermission!}",
                     matchId: widget.match.matchId,
-                    slipId: "${widget.selectUser.userName}${currentSlipController.text}",
+                    slipId:
+                        "${widget.selectUser.userName}${currentSlipController.text}",
                     slipUserId: widget.selectUser.userName,
                     updatedUserId: CacheHelper.getAccountInfo().name,
                     createdTimed: DateTime.now().millisecondsSinceEpoch)
                 .toJson());
+      }
+      /////// digit permission //////////
+      for (var receipt in newReceipt) {
+        for (var digit in receipt.digitList) {
+          num tempDigitTotal =
+              userDigitsAmounts[int.parse(digit.value)] + digit.amount;
+          if (tempDigitTotal > digitPermission.digitPermission!) {
+            showPermissionNoticeToast(
+                message:
+                    "Over - ${digit.value} [ ${widget.selectUser.userName} ]");
+            FirebaseFirestore.instance
+                .collection(Collections.match)
+                .doc(widget.match.date)
+                .collection(Collections.message)
+                .add(Message(
+                        title:
+                            "Over - ${digit.value} [ ${widget.selectUser.userName} ]",
+                        content:
+                            "${CacheHelper.getAccountInfo().name} make over digit amount. Current Total = $tempDigitTotal | Permission = [${digitPermission.digitPermission} ] | Over = ${tempDigitTotal - digitPermission.digitPermission!}",
+                        matchId: widget.match.matchId,
+                        slipId:
+                            "${widget.selectUser.userName}${currentSlipController.text}",
+                        slipUserId: widget.selectUser.userName,
+                        updatedUserId: CacheHelper.getAccountInfo().name,
+                        createdTimed: DateTime.now().millisecondsSinceEpoch)
+                    .toJson());
           }
         }
       }
@@ -1026,20 +1309,30 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
   }
 
   void insertRValues() {
-    int? inputs = int.tryParse(digitController.text.toString());
-    if (inputs != null && inputs < 100) {
+    String numberStr = digitController.text.toString();
+    int? inputs = int.tryParse(numberStr);
+    if (inputs != null && inputs < 1000) {
       List<Receipt> currentReceipts = [];
+      List<int> digits = DigitUtils.convertToListOfDigits(numberStr);
+      List<String> rValues = DigitUtils.generateRValues(digits);
+      List<Digit> digitList = [];
+      int totalAmount = 0;
+      for (int i = 0; i < rValues.length; i++) {
+        int amount = int.parse(
+            (i == 0) ? amountController.text : rAmountController.text);
+        totalAmount += amount;
+        digitList.add(Digit(
+          amount: amount,
+          value: rValues[i],
+          createdTime: DateTime.now().millisecondsSinceEpoch,
+          createUser: CacheHelper.getAccountInfo().name,
+        ));
+      }
       currentReceipts.add(Receipt(
-          type: "$inputs+",
-          digitList: [
-            Digit(amount: int.parse(amountController.text), value: digitController.text.toString(), createdTime: DateTime.now().millisecondsSinceEpoch, createUser: CacheHelper.getAccountInfo().name),
-            Digit(
-                amount: int.parse(rAmountController.text),
-                value: reverseString(digitController.text),
-                createdTime: DateTime.now().millisecondsSinceEpoch,
-                createUser: CacheHelper.getAccountInfo().name),
-          ],
-          totalAmount: int.parse(amountController.text) + int.parse(rAmountController.text)));
+        type: "$inputs+",
+        digitList: digitList,
+        totalAmount: totalAmount,
+      ));
       int? currentSlip = int.tryParse(currentSlipController.text);
       if (currentSlip != null && currentReceipts.isNotEmpty) {
         if (_selectedSlip == null) {
@@ -1054,21 +1347,33 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
               .doc(widget.match.date)
               .collection(widget.selectUser.userType)
               .doc("${widget.selectUser.userName}$currentSlip")
-              .set(Slip(totalAmount: tAmount, receipts: currentReceipts, userName: widget.selectUser.userName, id: currentSlip, isSave: false).toJson())
+              .set(Slip(
+                      totalAmount: tAmount,
+                      receipts: currentReceipts,
+                      userName: widget.selectUser.userName,
+                      id: currentSlip,
+                      isSave: false)
+                  .toJson())
               .catchError((error) {})
               .whenComplete(() {
             checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
-            if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
+            if (DateTime.now().millisecondsSinceEpoch >
+                widget.match.closeTime) {
               showNoticeToast(message: "Over Time");
-              FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                      title: overTimeInsertMessage,
-                      content: "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)]",
-                      matchId: widget.match.matchId,
-                      slipId: "${widget.selectUser.userName}$currentSlip",
-                      slipUserId: widget.selectUser.userName,
-                      updatedUserId: CacheHelper.getAccountInfo().name,
-                      createdTimed: DateTime.now().millisecondsSinceEpoch)
-                  .toJson());
+              FirebaseFirestore.instance
+                  .collection(Collections.match)
+                  .doc(widget.match.date)
+                  .collection(Collections.message)
+                  .add(Message(
+                          title: overTimeInsertMessage,
+                          content:
+                              "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)]",
+                          matchId: widget.match.matchId,
+                          slipId: "${widget.selectUser.userName}$currentSlip",
+                          slipUserId: widget.selectUser.userName,
+                          updatedUserId: CacheHelper.getAccountInfo().name,
+                          createdTimed: DateTime.now().millisecondsSinceEpoch)
+                      .toJson());
             }
           });
         } else {
@@ -1090,17 +1395,23 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
             Toasts.showErrorMessageToast("Failed : $error");
           }).whenComplete(() {
             checkDigitPermission(currentReceipts, userDigitAmounts, tempTotal);
-            if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
+            if (DateTime.now().millisecondsSinceEpoch >
+                widget.match.closeTime) {
               showNoticeToast(message: "Over Time");
-              FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                      title: overTimeInsertMessage,
-                      content: "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)",
-                      matchId: widget.match.matchId,
-                      slipId: "${widget.selectUser.userName}$currentSlip",
-                      slipUserId: widget.selectUser.userName,
-                      updatedUserId: CacheHelper.getAccountInfo().name,
-                      createdTimed: DateTime.now().millisecondsSinceEpoch)
-                  .toJson());
+              FirebaseFirestore.instance
+                  .collection(Collections.match)
+                  .doc(widget.match.date)
+                  .collection(Collections.message)
+                  .add(Message(
+                          title: overTimeInsertMessage,
+                          content:
+                              "${CacheHelper.getAccountInfo().name} --> ${widget.selectUser.userName} (slip $currentSlip)",
+                          matchId: widget.match.matchId,
+                          slipId: "${widget.selectUser.userName}$currentSlip",
+                          slipUserId: widget.selectUser.userName,
+                          updatedUserId: CacheHelper.getAccountInfo().name,
+                          createdTimed: DateTime.now().millisecondsSinceEpoch)
+                      .toJson());
             }
           });
         }
@@ -1114,13 +1425,20 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
   void uploadSlip() {
     int? currentSlip = int.tryParse(currentSlipController.text);
     if (currentSlip != null && _selectedSlip != null) {
-      showLoadingDialog(context: context, title: widget.match.date, content: "saving...");
+      showLoadingDialog(
+          context: context, title: widget.match.date, content: "saving...");
       FirebaseFirestore.instance
           .collection(Collections.match)
           .doc(widget.match.date)
           .collection(widget.selectUser.userType)
           .doc("${widget.selectUser.userName}$currentSlip")
-          .set(Slip(totalAmount: getCurrentSlipTotalAmount(), receipts: _selectedSlip!.receipts, userName: widget.selectUser.userName, id: currentSlip, isSave: true).toJson())
+          .set(Slip(
+                  totalAmount: getCurrentSlipTotalAmount(),
+                  receipts: _selectedSlip!.receipts,
+                  userName: widget.selectUser.userName,
+                  id: currentSlip,
+                  isSave: true)
+              .toJson())
           .then((value) {
         Navigator.of(context).pop();
         BlocProvider.of<SlipIdBloc>(context).add(RefreshSlipIdEvent());
@@ -1130,15 +1448,20 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
       }).whenComplete(() {
         if (DateTime.now().millisecondsSinceEpoch > widget.match.closeTime) {
           showNoticeToast(message: "Over Time");
-          FirebaseFirestore.instance.collection(Collections.match).doc(widget.match.date).collection(Collections.message).add(Message(
-                  title: overTimeSaveMessage,
-                  content: "${CacheHelper.getAccountInfo().name} saved ${widget.selectUser.userName}(Slip $currentSlip)",
-                  matchId: widget.match.matchId,
-                  slipId: "${widget.selectUser.userName}$currentSlip",
-                  slipUserId: widget.selectUser.userName,
-                  updatedUserId: CacheHelper.getAccountInfo().name,
-                  createdTimed: DateTime.now().millisecondsSinceEpoch)
-              .toJson());
+          FirebaseFirestore.instance
+              .collection(Collections.match)
+              .doc(widget.match.date)
+              .collection(Collections.message)
+              .add(Message(
+                      title: overTimeSaveMessage,
+                      content:
+                          "${CacheHelper.getAccountInfo().name} saved ${widget.selectUser.userName}(Slip $currentSlip)",
+                      matchId: widget.match.matchId,
+                      slipId: "${widget.selectUser.userName}$currentSlip",
+                      slipUserId: widget.selectUser.userName,
+                      updatedUserId: CacheHelper.getAccountInfo().name,
+                      createdTimed: DateTime.now().millisecondsSinceEpoch)
+                  .toJson());
         }
       });
     }
@@ -1190,7 +1513,9 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
           );
         } else if (data.hasError) {
           print(data.error.toString());
-          return DefaultText("fail to get users", style: TextStyles.footerTextStyle.copyWith(color: Colors.redAccent));
+          return DefaultText("fail to get users",
+              style:
+                  TextStyles.footerTextStyle.copyWith(color: Colors.redAccent));
         }
 
         return const SizedBox(
@@ -1206,11 +1531,15 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
     if (widget.selectUser.userType == "out") {
       accountsList = widget.match.outAccounts;
     } else {
-      accountsList = widget.match.inAccounts.where((element) => (element.type == "input")).toList();
+      accountsList = widget.match.inAccounts
+          .where((element) => (element.type == "input"))
+          .toList();
     }
 
     for (var account in accountsList) {
-      if (account.name == CacheHelper.getAccountInfo().name || account.referUser == CacheHelper.getAccountInfo().name || CacheHelper.getAccountInfo().type == "admin") {
+      if (account.name == CacheHelper.getAccountInfo().name ||
+          account.referUser == CacheHelper.getAccountInfo().name ||
+          CacheHelper.getAccountInfo().type == "admin") {
         filteredAccountsNameList.add(account.name);
       }
     }
@@ -1255,9 +1584,10 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                 int lastSlip = 0;
                 int currentSlipId = 1;
                 int totalAmount = 0;
-                selectUserDigitAmounts = List.generate(100, (index) => 0);
+                selectUserDigitAmounts = List.generate(1000, (index) => 0);
                 snapshot.data!.docs.map((DocumentSnapshot document) {
-                  Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                  Map<String, dynamic> data =
+                      document.data()! as Map<String, dynamic>;
                   Slip s = Slip.fromJson(data);
                   totalAmount += s.totalAmount;
                   if (s.isSave) {
@@ -1268,14 +1598,17 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                   }
                   for (var receipt in s.receipts) {
                     for (var digit in receipt.digitList) {
-                      selectUserDigitAmounts[int.parse(digit.value)] = selectUserDigitAmounts[int.parse(digit.value)] + digit.amount;
+                      selectUserDigitAmounts[int.parse(digit.value)] =
+                          selectUserDigitAmounts[int.parse(digit.value)] +
+                              digit.amount;
                     }
                   }
                 }).toList();
                 currentSlipController.text = currentSlipId.toString();
                 lastSlipController.text = lastSlip.toString();
                 userTotalAmountController.text = totalAmount.toString();
-                BlocProvider.of<ReceiptListBloc>(context).add(ChangeReceiptListEvent());
+                BlocProvider.of<ReceiptListBloc>(context)
+                    .add(ChangeReceiptListEvent());
                 return SizedBox(
                   height: 45,
                   child: Row(
@@ -1288,7 +1621,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                         controller: userTotalAmountController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                           enabled: false,
                           border: OutlineInputBorder(),
                           labelText: "Total",
@@ -1303,7 +1637,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                         controller: lastSlipController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                           enabled: false,
                           border: OutlineInputBorder(),
                           labelText: "Last Slip",
@@ -1317,8 +1652,10 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                           int? slipIdNum = int.tryParse(value);
                           if (slipIdNum != null) {
                             Slip? selectedSlip;
-                            snapshot.data!.docs.map((DocumentSnapshot document) {
-                              Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
+                            snapshot.data!.docs
+                                .map((DocumentSnapshot document) {
+                              Map<String, dynamic> data =
+                                  document.data()! as Map<String, dynamic>;
                               Slip s = Slip.fromJson(data);
                               if (slipIdNum == s.id) {
                                 selectedSlip = s;
@@ -1326,15 +1663,21 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                               return;
                             }).toList();
                             if (selectedSlip != null) {
-                              BlocProvider.of<ReceiptListBloc>(context).add(ChangeReceiptListEvent());
+                              BlocProvider.of<ReceiptListBloc>(context)
+                                  .add(ChangeReceiptListEvent());
                             } else {
-                              BlocProvider.of<ReceiptListBloc>(context).add(ChangeReceiptListEvent());
-                              currentSlipController.text = "${int.parse(lastSlipController.text.toString()) + 1}";
-                              Toasts.showErrorMessageToast("Invalid Current Slip Id");
+                              BlocProvider.of<ReceiptListBloc>(context)
+                                  .add(ChangeReceiptListEvent());
+                              currentSlipController.text =
+                                  "${int.parse(lastSlipController.text.toString()) + 1}";
+                              Toasts.showErrorMessageToast(
+                                  "Invalid Current Slip Id");
                             }
                           } else {
-                            currentSlipController.text = "${int.parse(lastSlipController.text.toString()) + 1}";
-                            Toasts.showErrorMessageToast("Invalid Current Slip Id");
+                            currentSlipController.text =
+                                "${int.parse(lastSlipController.text.toString()) + 1}";
+                            Toasts.showErrorMessageToast(
+                                "Invalid Current Slip Id");
                           }
                         },
                         style: TextStyles.textFieldsTextStyle(context),
@@ -1342,7 +1685,8 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                         controller: currentSlipController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 0),
                           border: OutlineInputBorder(),
                           hintText: "Current Slip",
                           labelText: "Current Slip",
