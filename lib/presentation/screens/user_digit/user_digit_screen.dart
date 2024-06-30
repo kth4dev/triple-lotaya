@@ -228,7 +228,7 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                                                                         .isNotEmpty &&
                                                                     _selectedMatch
                                                                             .winnerNumber ==
-                                                                        "${(digitAmountIndex < 10) ? 0 : ""}$digitAmountIndex")
+                                                                        digitString(digitAmountIndex))
                                                                 ? Colors.green
                                                                 : (colorIndex
                                                                         .isEven)
@@ -242,7 +242,7 @@ class _UserDigitScreenState extends State<UserDigitScreen> {
                                                                       .spaceBetween,
                                                               children: [
                                                                 DefaultText(
-                                                                    "${(digitAmountIndex < 10) ? 0 : ""}$digitAmountIndex",
+                                                                    digitString(digitAmountIndex),
                                                                     style: TextStyles
                                                                         .titleTextStyle),
                                                                 DefaultText(

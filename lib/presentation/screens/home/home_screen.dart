@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultAppBar(context, title: "LOTAYA"),
+      appBar: defaultAppBar(context, title: "LOTAYA-3D"),
       body: BlocListener<CheckNewVersionBloc, CheckNewVersionState>(
         listener: (context, state) {
           if(state is UpdateNewVersionState){

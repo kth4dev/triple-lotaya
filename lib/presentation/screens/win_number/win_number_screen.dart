@@ -246,7 +246,7 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
 
   Future<void> saveMatches() async {
     int? newWinNumber = int.tryParse(winNumberController.text.toString());
-    if (newWinNumber != null && newWinNumber < 100) {
+    if (newWinNumber != null && newWinNumber < 1000) {
       if (newWinNumber != _selectedMatch.winnerNumber) {
         DigitMatch tempMatch = _selectedMatch;
         tempMatch.winnerNumber = winNumberController.text.toString();

@@ -6,6 +6,7 @@ import 'package:lotaya/core/extensions/size_extension.dart';
 import 'package:lotaya/core/routes/routes.dart';
 import 'package:lotaya/core/styles/dialogs/error_dialog.dart';
 import 'package:lotaya/core/utils/digit_utils.dart';
+import 'package:lotaya/core/values/constants.dart';
 import 'package:lotaya/data/model/digit_permission.dart';
 import 'package:lotaya/data/model/match.dart';
 import 'package:lotaya/data/model/message.dart';
@@ -175,13 +176,13 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
               List<Digit> overDigitList = []; // just use value and amount
               int totalOverAmount = 0;
 
-              for (int i = 0; i < 100; i++) {
+              for (int i = 0; i < 1000; i++) {
                 int value = inDigits[i] - outDigits[i];
                 if (value > widget.match.breakAmount) {
                   totalOverAmount += value - widget.match.breakAmount;
                   overDigitList.add(Digit(
                       amount: value - widget.match.breakAmount,
-                      value: (i < 10) ? "0$i" : "$i",
+                      value: (i < 10) ? "00$i" : (i<100)? "0$i":"$i",
                       createdTime: 0,
                       createUser: ""));
                 }
@@ -216,6 +217,7 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                               style: TextStyles.bodyTextStyle.copyWith(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold),
+                              align: TextAlign.right,
                             ),
                           ),
                         ),
@@ -226,32 +228,38 @@ class _SaleDetailsInputBoxWidgetState extends State<SaleDetailsInputBoxWidget> {
                       child: ListView.builder(
                           itemCount: overDigitList.length,
                           itemBuilder: (context, index) {
-                            return Row(
+                            return Column(
                               children: [
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 1),
-                                    padding: const EdgeInsets.all(5),
-                                    child: DefaultText(
-                                      overDigitList[index].value,
-                                      style: TextStyles.bodyTextStyle
-                                          .copyWith(color: Colors.black),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 1),
+                                        padding: const EdgeInsets.all(5),
+                                        child: DefaultText(
+                                          overDigitList[index].value,
+                                          style: TextStyles.bodyTextStyle
+                                              .copyWith(color: Colors.black),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 1),
-                                    padding: const EdgeInsets.all(5),
-                                    child: DefaultText(
-                                      overDigitList[index].amount.toString(),
-                                      style: TextStyles.bodyTextStyle
-                                          .copyWith(color: Colors.black),
+                                    Expanded(
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 1),
+                                        padding: const EdgeInsets.all(5),
+                                        child: DefaultText(
+                                          formatMoney(overDigitList[index].amount),
+                                          style: TextStyles.bodyTextStyle
+                                              .copyWith(color: Colors.black),
+                                          align: TextAlign.right,
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
+                                Container(height: 0.3,width: double.maxFinite,color: Colors.grey,)
                               ],
                             );
                           }),

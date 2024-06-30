@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lotaya/core/extensions/size_extension.dart';
 import 'package:lotaya/core/styles/styles.dart';
+import 'package:lotaya/core/values/constants.dart';
 import 'package:lotaya/data/cache/cache_helper.dart';
 import 'package:lotaya/data/model/match.dart';
 import 'package:lotaya/presentation/screens/sales/SelectUser.dart';
@@ -357,11 +358,8 @@ class _SaleMessageScreenState extends State<SaleMessageScreen> {
         if (values.length == 2) {
           int? digit = int.tryParse(values[0]);
           int? amount = int.tryParse(values[1]);
-          if (digit != null && digit < 100 && digit >= 0 && amount != null) {
-            String value=digit.toString();
-            if(digit<10) {
-              value="0$digit";
-            }
+          if (digit != null && digit < 1000 && digit >= 0 && amount != null) {
+            String value=digitString(digit);
 
             totalAmount += amount;
             digitList.add(Receipt(
