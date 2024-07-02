@@ -179,7 +179,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Container(
-                            color: Color(0xffdcdcdc),
+                            color: const Color(0xffdcdcdc),
                             child: Row(
                               children: List.generate(10, (startIndex) {
                                 return SizedBox(
@@ -189,7 +189,8 @@ class _DigitsScreenState extends State<DigitsScreen> {
                                       physics: const NeverScrollableScrollPhysics(),
                                       itemCount: 100,
                                       itemBuilder: (context, endIndex) {
-                                        int index = int.parse("$startIndex$endIndex");
+                                        String end = (endIndex<10)? "0$endIndex":"$endIndex";
+                                        int index = int.parse("$startIndex$end");
                                         return Card(
                                           margin: const EdgeInsets.all(3),
                                           color: getBackGroundColor(inDigits[index] - outDigits[index]),
@@ -205,7 +206,7 @@ class _DigitsScreenState extends State<DigitsScreen> {
                                                   children: [
                                                     Align(
                                                         alignment: Alignment.center,
-                                                        child: DefaultText((index < 100) ? ((index<10)?"00$index":"0$index") : " $index", style: TextStyle(fontSize: getDigitFontSize(context), fontWeight: FontWeight.bold))),
+                                                        child: DefaultText(digitString(index), style: TextStyle(fontSize: getDigitFontSize(context), fontWeight: FontWeight.bold))),
                                                     Expanded(
                                                         child: Container(
                                                             padding: const EdgeInsets.only(right: 5),
