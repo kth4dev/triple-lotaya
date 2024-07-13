@@ -185,7 +185,7 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: DefaultText("Total = ${state.total}",
+                  child: DefaultText("Total = ${state.winTotal}",
                       style: TextStyles.titleTextStyle.copyWith(
                           fontWeight: FontWeight.bold, color: Colors.green)),
                 ),
@@ -200,6 +200,9 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                       const Spacer(),
                       DefaultText("ဒဲ့",
                           style: TextStyles.titleTextStyle
+                              .copyWith(color: Colors.white)),      
+                      DefaultText("တွဒ်",
+                          style: TextStyles.titleTextStyle
                               .copyWith(color: Colors.white)),
                     ],
                   ),
@@ -213,7 +216,7 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                         return Container(
                           padding: const EdgeInsets.all(4),
                           color: (index % 2 == 0)
-                              ? Color(0xfff6f4f4)
+                              ? const Color(0xfff6f4f4)
                               : Colors.transparent,
                           child: Row(
                             children: [
@@ -221,7 +224,10 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                                   style: TextStyles.titleTextStyle
                                       .copyWith(color: Colors.black)),
                               const Spacer(),
-                              DefaultText(formatMoney(amount),
+                              DefaultText(formatMoney(amount.win),
+                                  style: TextStyles.titleTextStyle
+                                      .copyWith(color: Colors.black)),
+                              DefaultText(formatMoney(amount.twit),
                                   style: TextStyles.titleTextStyle
                                       .copyWith(color: Colors.black)),
                             ],

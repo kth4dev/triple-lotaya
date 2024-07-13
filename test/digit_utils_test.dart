@@ -24,6 +24,24 @@ void main() {
   test('int to list', () {
     List<int> expected = DigitUtils.convertToListOfDigits("123");
     debugPrint(expected.toString());
-    expect(expected, [1,2,3]);
+    expect(expected, [1, 2, 3]);
+  });
+
+  test('get twit smaller', () {
+    String expected = DigitUtils.getTwitSmaller(0);
+    String expected2 = DigitUtils.getTwitSmaller(999);
+    debugPrint(expected.toString());
+    debugPrint(expected2.toString());
+    expect(expected, '999');
+    expect(expected2, '998');
+  });
+
+  test('get twit bigger', () {
+    String expected = DigitUtils.getTwitBigger(0);
+    String expected2 = DigitUtils.getTwitBigger(999);
+    debugPrint(expected.toString());
+    debugPrint(expected2.toString());
+    expect(expected, '001');
+    expect(expected2, '000');
   });
 }
