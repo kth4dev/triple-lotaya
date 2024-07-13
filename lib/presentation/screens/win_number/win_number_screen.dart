@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lotaya/core/extensions/size_extension.dart';
 import 'package:lotaya/core/values/constants.dart';
+import 'package:lotaya/data/model/win_amount.dart';
 import 'package:lotaya/presentation/bloc/win_number/win__number_bloc.dart';
 import 'package:lotaya/presentation/widgets/empty_match.dart';
 
@@ -43,7 +44,7 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: defaultAppBar(context, title: "ပေါက်သီး"),
-      body: Padding(
+      body: Padding( 
         padding: (MediaQuery.of(context).size.width > 600)
             ? const EdgeInsets.all(10.0)
             : const EdgeInsets.all(5),
@@ -62,7 +63,7 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
               if (_selectedMatchId == "" && matches.isNotEmpty) {
                 _selectedMatchId = matches[0];
                 _selectedMatch = state.matchList[0];
-
+      
                 for (int i = 0; i < state.matchList.length; i++) {
                   if (state.matchList[i].isActive) {
                     _selectedMatchId = matches[i];
@@ -70,7 +71,7 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                   }
                 }
               }
-
+      
               if (matches.isNotEmpty) {
                 if (_selectedMatch.winnerNumber != null) {
                   winNumberController.text =
@@ -79,13 +80,13 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
                 } else {
                   winNumberController.text = "";
                 }
-
+      
                 return Center(
                   child: SizedBox(
                     width: (MediaQuery.of(context).size.width >= 600)
                         ? 600
                         : MediaQuery.of(context).size.width,
-                    child: Column(
+                    child: ListView(
                       children: [
                         Row(
                           children: [
@@ -181,62 +182,29 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
       child: BlocBuilder<WinNumberBloc, WinNumberState>(
         builder: (context, state) {
           if (state is WinNumberLoadedState) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DefaultText("Total = ${state.winTotal}",
-                      style: TextStyles.titleTextStyle.copyWith(
-                          fontWeight: FontWeight.bold, color: Colors.green)),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  color: Colors.blue,
-                  child: Row(
-                    children: [
-                      DefaultText("အမည်",
-                          style: TextStyles.titleTextStyle
-                              .copyWith(color: Colors.white)),
-                      const Spacer(),
-                      DefaultText("ဒဲ့",
-                          style: TextStyles.titleTextStyle
-                              .copyWith(color: Colors.white)),      
-                      DefaultText("တွဒ်",
-                          style: TextStyles.titleTextStyle
-                              .copyWith(color: Colors.white)),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                      itemCount: state.winList.length,
-                      itemBuilder: (context, index) {
-                        final name = state.winList.keys.elementAt(index);
-                        final amount = state.winList.values.elementAt(index);
-                        return Container(
-                          padding: const EdgeInsets.all(4),
-                          color: (index % 2 == 0)
-                              ? const Color(0xfff6f4f4)
-                              : Colors.transparent,
-                          child: Row(
-                            children: [
-                              DefaultText(name,
-                                  style: TextStyles.titleTextStyle
-                                      .copyWith(color: Colors.black)),
-                              const Spacer(),
-                              DefaultText(formatMoney(amount.win),
-                                  style: TextStyles.titleTextStyle
-                                      .copyWith(color: Colors.black)),
-                              DefaultText(formatMoney(amount.twit),
-                                  style: TextStyles.titleTextStyle
-                                      .copyWith(color: Colors.black)),
-                            ],
-                          ),
-                        );
-                      }),
-                ),
-              ],
-            );
+            List<DataRow> list = [];
+            for(var win in state.winList.entries){
+              final data = win.value;
+              list.add(DataRow(cells: [
+                buildRow(value: win.key),
+                buildRow(value: formatMoney(data.win)),
+                buildRow(value: formatMoneyForNum(data.twit))
+              ]));
+            }
+
+            list.add(DataRow(color: MaterialStateColor.resolveWith((states) => const Color(0xfff5f3f3)), cells: [
+              buildRow(value: "Total"),
+              buildRow(value: formatMoney(state.winTotal)),
+              buildRow(value: formatMoney(state.twitTotal)),
+            ]));
+            return DataTable(
+                headingRowColor: MaterialStateColor.resolveWith((states) => const Color(0xfff5f3f3)),
+                columns: [
+                  buildRowHeader("အမည်"),
+                  buildRowHeader("ဒဲ့"),
+                  buildRowHeader("တွဒ်"),
+                ],
+                rows: list);
           }
           if (state is WinNumberLoadingState) {
             return const Center(
@@ -250,6 +218,22 @@ class _WinNumberScreenState extends State<WinNumberScreen> {
     );
   }
 
+  DataColumn buildRowHeader(String label) {
+    return DataColumn(
+        label: DefaultText(
+          label,
+          style: TextStyles.bodyTextStyle.copyWith(fontWeight: FontWeight.bold),
+          align: TextAlign.end,
+        ));
+  }
+
+  DataCell buildRow({required String value}) {
+    return DataCell(DefaultText(
+      value,
+      style: TextStyles.bodyTextStyle,
+      align: TextAlign.end,
+    ));
+  }
   Future<void> saveMatches() async {
     int? newWinNumber = int.tryParse(winNumberController.text.toString());
     if (newWinNumber != null && newWinNumber < 1000) {

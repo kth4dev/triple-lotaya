@@ -163,7 +163,8 @@ class _ListScreenState extends State<ListScreen> {
         buildRow(value: formatMoneyForNum(data.salePrices)),
         buildRow(value: formatMoneyForNum(data.commission)),
         buildRow(value: formatMoneyForNum(data.winAmount)),
-        buildRow(value: formatMoneyForNum(data.winGetAmount)),
+        buildRow(value: formatMoneyForNum(data.twitAmount)),
+        buildRow(value: formatMoneyForNum(data.winGetAmount+data.twitGetAmount)),
         buildRow(value: formatMoneyForNum(data.profit)),
       ]);
     }).toList();
@@ -172,7 +173,8 @@ class _ListScreenState extends State<ListScreen> {
       buildRow(value: formatMoneyForNum(total.salePrices)),
       buildRow(value: formatMoneyForNum(total.commission)),
       buildRow(value: formatMoneyForNum(total.winAmount)),
-      buildRow(value: formatMoneyForNum(total.winGetAmount)),
+      buildRow(value: formatMoneyForNum(total.twitAmount)),
+      buildRow(value: formatMoneyForNum(total.winGetAmount+total.twitGetAmount)),
       buildRow(value: formatMoneyForNum(total.profit)),
     ]));
     return DataTable(
@@ -182,6 +184,7 @@ class _ListScreenState extends State<ListScreen> {
           buildRowHeader("ရောင်းရငွေ"),
           buildRowHeader("ကော်နှုတ်"),
           buildRowHeader("ဒဲ့"),
+          buildRowHeader("တွဒ်"),
           buildRowHeader("လျှော်ကြေး"),
           buildRowHeader("အမြတ်"),
         ],
@@ -195,7 +198,8 @@ class _ListScreenState extends State<ListScreen> {
         buildRow(value: formatMoneyForNum(data.salePrices)),
         buildRow(value: formatMoneyForNum(data.commission)),
         buildRow(value: formatMoneyForNum(data.winAmount)),
-        buildRow(value: formatMoneyForNum(data.winGetAmount)),
+        buildRow(value: formatMoneyForNum(data.twitAmount)),
+        buildRow(value: formatMoneyForNum(data.winGetAmount+total.twitGetAmount)),
         buildRow(value: formatMoneyForNum(data.profit)),
       ]);
     }).toList();
@@ -204,7 +208,8 @@ class _ListScreenState extends State<ListScreen> {
       buildRow(value: formatMoneyForNum(total.salePrices)),
       buildRow(value: formatMoneyForNum(total.commission)),
       buildRow(value: formatMoneyForNum(total.winAmount)),
-      buildRow(value: formatMoneyForNum(total.winGetAmount)),
+      buildRow(value: formatMoneyForNum(total.twitAmount)),
+      buildRow(value: formatMoneyForNum(total.winGetAmount+total.twitGetAmount)),
       buildRow(value: formatMoneyForNum(total.profit)),
     ]));
     return DataTable(
@@ -214,6 +219,7 @@ class _ListScreenState extends State<ListScreen> {
           buildRowHeader("တင်ငွေ"),
           buildRowHeader("ကော်"),
           buildRowHeader("ဒဲ့"),
+          buildRowHeader("တွဒ်"),
           buildRowHeader("လျှော်ကြေး"),
           buildRowHeader("အမြတ်"),
         ],
@@ -221,12 +227,14 @@ class _ListScreenState extends State<ListScreen> {
   }
 
   ListModel getTotal(List<ListModel> lists) {
-    final result = ListModel(salePrices: 0, commission: 0, winAmount: 0, winGetAmount: 0, profit: 0);
+    final result = ListModel(salePrices: 0, commission: 0, winAmount: 0, winGetAmount: 0, profit: 0, twitAmount: 0, twitGetAmount: 0);
     for (var list in lists) {
       result.salePrices += list.salePrices;
       result.commission += list.commission;
       result.winAmount += list.winAmount;
       result.winGetAmount += list.winGetAmount;
+      result.twitAmount += list.twitAmount;
+      result.twitGetAmount += list.twitGetAmount;
       result.profit += list.profit;
     }
     return result;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lotaya/core/utils/digit_utils.dart';
 import 'package:lotaya/data/model/match.dart';
 import 'package:lotaya/data/model/user.dart';
 import 'package:meta/meta.dart';
@@ -24,14 +25,36 @@ class ListBloc extends Bloc<ListEvent, ListState> {
     List<ListModel> inList = [];
 
     for (Account e in event.match.inAccounts) {
-      if (isAccountContain(e) && e.type=="input") {
-        inList.add(ListModel(account: e, salePrices: 0, commission: 0, winAmount: 0, winGetAmount: 0, profit: 0));
+      if (isAccountContain(e) && e.type == "input") {
+        inList.add(ListModel(
+            account: e,
+            salePrices: 0,
+            commission: 0,
+            winAmount: 0,
+            winGetAmount: 0,
+            profit: 0,
+            twitAmount: 0,
+            twitGetAmount: 0));
       }
     }
-    List<ListModel> outList = event.match.outAccounts.map((e) => ListModel(account: e, salePrices: 0, commission: 0, winAmount: 0, winGetAmount: 0, profit: 0)).toList();
+    List<ListModel> outList = event.match.outAccounts
+        .map((e) => ListModel(
+            account: e,
+            salePrices: 0,
+            commission: 0,
+            winAmount: 0,
+            winGetAmount: 0,
+            profit: 0,
+            twitAmount: 0,
+            twitGetAmount: 0))
+        .toList();
 
     try {
-      final documentSnapshot = await FirebaseFirestore.instance.collection(Collections.match).doc(event.match.matchId).collection("in").get();
+      final documentSnapshot = await FirebaseFirestore.instance
+          .collection(Collections.match)
+          .doc(event.match.matchId)
+          .collection("in")
+          .get();
       documentSnapshot.docs.map((DocumentSnapshot document) {
         Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
         Slip slip = Slip.fromJson(data);
@@ -44,10 +67,15 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
             ///get win amount
             if (event.match.winnerNumber != null) {
+              int winNumber = int.parse(event.match.winnerNumber!);
               for (var receipt in slip.receipts) {
                 for (var digit in receipt.digitList) {
                   if (digit.value == event.match.winnerNumber.toString()) {
                     inList[i].winAmount = inList[i].winAmount + digit.amount;
+                  }
+                  if (digit.value == DigitUtils.getTwitBigger(winNumber) ||
+                      digit.value == DigitUtils.getTwitSmaller(winNumber)) {
+                    inList[i].twitAmount = inList[i].twitAmount + digit.amount;
                   }
                 }
               }
@@ -58,16 +86,25 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
       ///caculation
       for (int i = 0; i < inList.length; i++) {
-        double netAmount = inList[i].salePrices - (inList[i].salePrices * (inList[i].account!.commission / 100));
-        num totalGetWinAmount = inList[i].winAmount * inList[i].account!.percent;
-        num profit = netAmount.toInt() - totalGetWinAmount;
+        double netAmount = inList[i].salePrices -
+            (inList[i].salePrices * (inList[i].account!.commission / 100));
+        num totalGetWinAmount =
+            inList[i].winAmount * inList[i].account!.percent;
+        num totalGetTwitAmount = inList[i].twitAmount * 10;
+        num profit =
+            netAmount.toInt() - (totalGetTwitAmount + totalGetWinAmount);
 
         inList[i].profit = profit;
         inList[i].winGetAmount = totalGetWinAmount;
+        inList[i].twitGetAmount = totalGetTwitAmount;
         inList[i].commission = netAmount;
       }
 
-      final outDocuments = await FirebaseFirestore.instance.collection(Collections.match).doc(event.match.matchId).collection("out").get();
+      final outDocuments = await FirebaseFirestore.instance
+          .collection(Collections.match)
+          .doc(event.match.matchId)
+          .collection("out")
+          .get();
       outDocuments.docs.map((DocumentSnapshot document) {
         Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
         Slip slip = Slip.fromJson(data);
@@ -80,10 +117,16 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
             ///get win amount
             if (event.match.winnerNumber != null) {
+              int winNumber = int.parse(event.match.winnerNumber!);
               for (var receipt in slip.receipts) {
                 for (var digit in receipt.digitList) {
                   if (digit.value == event.match.winnerNumber.toString()) {
                     outList[i].winAmount = outList[i].winAmount + digit.amount;
+                  }
+                  if (digit.value == DigitUtils.getTwitBigger(winNumber) ||
+                      digit.value == DigitUtils.getTwitSmaller(winNumber)) {
+                    outList[i].twitAmount =
+                        outList[i].twitAmount + digit.amount;
                   }
                 }
               }
@@ -94,14 +137,17 @@ class ListBloc extends Bloc<ListEvent, ListState> {
 
       ///caculation
       for (int i = 0; i < outList.length; i++) {
-        double netAmount = (outList[i].salePrices * (outList[i].account!.commission / 100));
-        num totalGetWinAmount = outList[i].winAmount * outList[i].account!.percent;
-
-        num profit = (netAmount.toInt() + totalGetWinAmount)-outList[i].salePrices ;
-
+        double netAmount =
+            (outList[i].salePrices * (outList[i].account!.commission / 100));
+        num totalGetWinAmount =
+            outList[i].winAmount * outList[i].account!.percent;
+        num totalGetTwitAmount = outList[i].twitAmount * 10;
+        num profit =
+            (netAmount.toInt() + totalGetWinAmount + totalGetTwitAmount) - outList[i].salePrices;
 
         outList[i].profit = profit;
         outList[i].winGetAmount = totalGetWinAmount;
+        outList[i].twitGetAmount = totalGetTwitAmount;
         outList[i].commission = netAmount;
       }
 
